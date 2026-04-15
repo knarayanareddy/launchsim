@@ -61,6 +61,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (user) await fetchProfile(user.id);
   };
 
+  const processReferral = async () => {
+    const refCode = localStorage.getItem("launchsim_ref");
+    if (!refCode) return;
+    try {
+      const { data, error } = await supabase.functions.invoke("process-referral", {
+        body: { referral_code: refCode },
+      });
+      if (!error && data?.success) {
+        localStorage.removeItem("launchsim_ref");
+        // Will be visible after profile refresh
+      } else if (data?.already_processed) {
+        localStorage.removeItem("launchsim_ref");
+      }
+    } catch (e) {
+      console.error("Referral processing error:", e);
+    }
+  };
+
   useEffect(() => {
     // Set up auth listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -69,7 +87,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         if (session?.user) {
           // Use setTimeout to avoid deadlock with Supabase client
-          setTimeout(() => fetchProfile(session.user.id), 0);
+          setTimeout(() => {
+            fetchProfile(session.user.id);
+            // Process referral on first login
+            if (event === "SIGNED_IN") {
+              processReferral();
+            }
+          }, 0);
         } else {
           setProfile(null);
         }
