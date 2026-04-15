@@ -25,6 +25,8 @@ const getUserPlan = (profile: any): "free" | "pro" | "unlimited" => {
 };
 
 const Results = () => {
+  const { profile } = useAuth();
+  const USER_PLAN = getUserPlan(profile);
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as {
