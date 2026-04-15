@@ -68,6 +68,11 @@ const Signup = () => {
       return;
     }
 
+    // Send welcome email (fire and forget)
+    supabase.functions.invoke("send-email", {
+      body: { to: email, template: "welcome", data: { name: fullName || "there" } },
+    }).catch(console.error);
+
     toast.success("Check your email to confirm your account!");
     navigate("/login", { state: { onboarding: true } });
   };

@@ -12,6 +12,11 @@ interface Profile {
   credits_remaining: number;
   onboarding_completed: boolean;
   user_type: string | null;
+  email_prefs: {
+    simulation_complete: boolean;
+    credit_warnings: boolean;
+    product_updates: boolean;
+  };
 }
 
 interface AuthContextType {
@@ -46,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .select("*")
       .eq("id", userId)
       .single();
-    setProfile(data);
+    setProfile(data ? { ...data, email_prefs: data.email_prefs as Profile["email_prefs"] } : null);
   };
 
   const refreshProfile = async () => {

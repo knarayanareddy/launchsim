@@ -6,8 +6,9 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Loader2, Upload, AlertTriangle } from "lucide-react";
+import { Loader2, Upload, AlertTriangle, Mail } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const Settings = () => {
@@ -22,6 +23,26 @@ const Settings = () => {
   const [newPassword, setNewPassword] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [emailPrefs, setEmailPrefs] = useState(
+    profile?.email_prefs || { simulation_complete: true, credit_warnings: true, product_updates: true }
+  );
+  const [savingPrefs, setSavingPrefs] = useState(false);
+
+  const handleSaveEmailPrefs = async () => {
+    if (!user) return;
+    setSavingPrefs(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ email_prefs: emailPrefs as any })
+      .eq("id", user.id);
+    setSavingPrefs(false);
+    if (error) {
+      toast.error("Failed to save email preferences.");
+    } else {
+      toast.success("Email preferences saved!");
+      await refreshProfile();
+    }
+  };
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -153,6 +174,49 @@ const Settings = () => {
           </div>
           <Button variant="outline" className="border-white/10" onClick={() => navigate("/pricing")}>
             Upgrade Plan
+          </Button>
+        </section>
+
+        {/* Email Preferences */}
+        <section className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6 space-y-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Mail className="w-5 h-5 text-primary" /> Email Notifications
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">Simulation complete</p>
+                <p className="text-xs text-muted-foreground">Get notified when your simulation results are ready</p>
+              </div>
+              <Switch
+                checked={emailPrefs.simulation_complete}
+                onCheckedChange={(v) => setEmailPrefs((p) => ({ ...p, simulation_complete: v }))}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">Credit warnings</p>
+                <p className="text-xs text-muted-foreground">Alert when you're running low on simulation credits</p>
+              </div>
+              <Switch
+                checked={emailPrefs.credit_warnings}
+                onCheckedChange={(v) => setEmailPrefs((p) => ({ ...p, credit_warnings: v }))}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground">Product updates</p>
+                <p className="text-xs text-muted-foreground">New features and improvements</p>
+              </div>
+              <Switch
+                checked={emailPrefs.product_updates}
+                onCheckedChange={(v) => setEmailPrefs((p) => ({ ...p, product_updates: v }))}
+              />
+            </div>
+          </div>
+          <Button onClick={handleSaveEmailPrefs} disabled={savingPrefs} className="bg-primary text-primary-foreground hover:bg-primary/90">
+            {savingPrefs ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            Save Preferences
           </Button>
         </section>
 
