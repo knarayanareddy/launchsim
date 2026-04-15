@@ -124,6 +124,8 @@ export type Database = {
           email_prefs: Json
           full_name: string | null
           id: string
+          is_admin: boolean
+          is_suspended: boolean
           onboarding_completed: boolean
           plan_tier: string
           referral_code: string
@@ -141,6 +143,8 @@ export type Database = {
           email_prefs?: Json
           full_name?: string | null
           id: string
+          is_admin?: boolean
+          is_suspended?: boolean
           onboarding_completed?: boolean
           plan_tier?: string
           referral_code?: string
@@ -158,6 +162,8 @@ export type Database = {
           email_prefs?: Json
           full_name?: string | null
           id?: string
+          is_admin?: boolean
+          is_suspended?: boolean
           onboarding_completed?: boolean
           plan_tier?: string
           referral_code?: string
@@ -305,7 +311,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
