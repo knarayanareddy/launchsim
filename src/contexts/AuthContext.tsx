@@ -10,6 +10,8 @@ interface Profile {
   plan_tier: string;
   simulations_run: number;
   credits_remaining: number;
+  onboarding_completed: boolean;
+  user_type: string | null;
 }
 
 interface AuthContextType {
