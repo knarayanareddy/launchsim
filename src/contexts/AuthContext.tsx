@@ -12,6 +12,9 @@ interface Profile {
   credits_remaining: number;
   onboarding_completed: boolean;
   user_type: string | null;
+  referral_code: string;
+  referred_by: string | null;
+  total_referrals: number;
   email_prefs: {
     simulation_complete: boolean;
     credit_warnings: boolean;
