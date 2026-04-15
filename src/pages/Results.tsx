@@ -2,21 +2,27 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import { FileDown, Lock, Loader2, Send } from "lucide-react";
 import OverviewTab from "@/components/results/OverviewTab";
 import ObjectionsTab from "@/components/results/ObjectionsTab";
 import StrengthsTab from "@/components/results/StrengthsTab";
 import AgentFeedTab from "@/components/results/AgentFeedTab";
 import RefinedPitchTab from "@/components/results/RefinedPitchTab";
+import NotionExportModal from "@/components/results/NotionExportModal";
 import { saveSimulation } from "@/lib/simulationService";
+import { generatePdfReport } from "@/lib/pdfExport";
 import type { SimulationResult } from "@/hooks/useSimulation";
 
 const TABS = ["Overview", "Objections", "Strengths", "Agent Feed", "Refined Pitch"];
 
+// Placeholder: replace with real user plan logic
+const getUserPlan = (): "free" | "pro" | "unlimited" => "unlimited";
+const USER_PLAN = getUserPlan();
+
 const Results = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { toast } = useToast();
   const state = location.state as {
     description?: string;
     question?: string;
@@ -25,9 +31,12 @@ const Results = () => {
   } | null;
 
   const aiResult = state?.aiResult;
+  const description = state?.description || "LaunchSim helps founders simulate how 1,000 real user types would react to their product before launch.";
 
   const [activeTab, setActiveTab] = useState(0);
   const [shareToken, setShareToken] = useState<string | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [notionOpen, setNotionOpen] = useState(false);
   const savedRef = useRef(false);
 
   // Auto-save on mount
@@ -35,7 +44,6 @@ const Results = () => {
     if (savedRef.current) return;
     savedRef.current = true;
 
-    const description = state?.description || "LaunchSim helps founders simulate how 1,000 real user types would react to their product before launch.";
     const depthLabels = ["quick", "standard", "deep"];
 
     saveSimulation({
@@ -49,7 +57,7 @@ const Results = () => {
     })
       .then((result) => {
         setShareToken(result.share_token);
-        toast({ description: "✅ Saved to your wiki", duration: 3000 });
+        toast.success("Saved to your wiki");
       })
       .catch((err) => {
         console.error("Failed to save simulation:", err);
@@ -61,7 +69,34 @@ const Results = () => {
       ? `${window.location.origin}/wiki/${shareToken}`
       : window.location.href;
     await navigator.clipboard.writeText(url);
-    toast({ description: "Link copied! Anyone with this link can view your report", duration: 3000 });
+    toast.success("Link copied!", { description: "Anyone with this link can view your report" });
+  };
+
+  const handleExportPdf = async () => {
+    if (USER_PLAN === "free") {
+      toast.info("PDF export requires Pro plan", { description: "Upgrade to export your reports." });
+      return;
+    }
+    if (!aiResult) return;
+
+    setPdfLoading(true);
+    try {
+      await generatePdfReport(aiResult, description);
+      toast.success("PDF downloaded");
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      toast.error("Failed to generate PDF. Please try again.");
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  const handleExportNotion = () => {
+    if (USER_PLAN !== "unlimited") {
+      toast.info("Notion export requires Unlimited plan", { description: "Upgrade to export directly to Notion." });
+      return;
+    }
+    setNotionOpen(true);
   };
 
   return (
@@ -81,8 +116,34 @@ const Results = () => {
               ← Run Another Simulation
             </button>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="text-xs border-border text-muted-foreground hover:text-foreground">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportPdf}
+                disabled={pdfLoading}
+                className="text-xs border-border text-muted-foreground hover:text-foreground gap-1.5"
+              >
+                {pdfLoading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : USER_PLAN === "free" ? (
+                  <Lock className="w-3.5 h-3.5" />
+                ) : (
+                  <FileDown className="w-3.5 h-3.5" />
+                )}
                 Export PDF
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportNotion}
+                className="text-xs border-border text-muted-foreground hover:text-foreground gap-1.5"
+              >
+                {USER_PLAN !== "unlimited" ? (
+                  <Lock className="w-3.5 h-3.5" />
+                ) : (
+                  <Send className="w-3.5 h-3.5" />
+                )}
+                Notion
               </Button>
               <Button size="sm" onClick={handleShare} className="text-xs bg-primary text-primary-foreground hover:bg-primary/90">
                 Share
@@ -134,13 +195,23 @@ const Results = () => {
           {activeTab === 3 && <AgentFeedTab data={aiResult?.agents} />}
           {activeTab === 4 && (
             <RefinedPitchTab
-              originalPitch={state?.description}
+              originalPitch={description}
               refinedPitch={aiResult?.sharpened_pitch}
               changesMade={aiResult?.pitch_changes_made}
             />
           )}
         </motion.div>
       </div>
+
+      {/* Notion export modal */}
+      {aiResult && (
+        <NotionExportModal
+          open={notionOpen}
+          onOpenChange={setNotionOpen}
+          result={aiResult}
+          description={description}
+        />
+      )}
     </div>
   );
 };
