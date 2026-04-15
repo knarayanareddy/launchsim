@@ -12,6 +12,11 @@ interface Profile {
   credits_remaining: number;
   onboarding_completed: boolean;
   user_type: string | null;
+  email_prefs: {
+    simulation_complete: boolean;
+    credit_warnings: boolean;
+    product_updates: boolean;
+  };
 }
 
 interface AuthContextType {
