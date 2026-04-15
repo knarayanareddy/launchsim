@@ -63,9 +63,11 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          onboarding_completed: boolean
           plan_tier: string
           simulations_run: number
           updated_at: string
+          user_type: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -74,9 +76,11 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          onboarding_completed?: boolean
           plan_tier?: string
           simulations_run?: number
           updated_at?: string
+          user_type?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -85,9 +89,11 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          onboarding_completed?: boolean
           plan_tier?: string
           simulations_run?: number
           updated_at?: string
+          user_type?: string | null
         }
         Relationships: []
       }
