@@ -9,6 +9,7 @@ interface ProductInputProps {
   setQuestion: (v: string) => void;
   descriptionError?: string;
   clearError: () => void;
+  charGuidance?: string | null;
 }
 
 const EXAMPLES: { key: ExampleKey; emoji: string; label: string }[] = [
@@ -26,6 +27,7 @@ const ProductInput = ({
   setQuestion,
   descriptionError,
   clearError,
+  charGuidance,
 }: ProductInputProps) => {
   const charCount = description.length;
   const charColor =
@@ -65,6 +67,9 @@ const ProductInput = ({
         </div>
         {descriptionError && (
           <p className="text-destructive text-xs mt-2 font-mono">{descriptionError}</p>
+        )}
+        {!descriptionError && charGuidance && (
+          <p className="text-warning text-xs mt-2 font-mono">{charGuidance}</p>
         )}
 
         {/* Quick-fill examples */}
