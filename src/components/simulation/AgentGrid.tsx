@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import type { MockAgent } from "@/data/simulationMocks";
 import TypewriterText from "@/components/simulation/TypewriterText";
@@ -20,14 +21,34 @@ interface AgentGridProps {
   agents: MockAgent[];
 }
 
+const UpvoteCounter = ({ target }: { target: number }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let current = 0;
+    const step = Math.ceil(target / 15);
+    const interval = setInterval(() => {
+      current = Math.min(current + step, target);
+      setCount(current);
+      if (current >= target) clearInterval(interval);
+    }, 120);
+    return () => clearInterval(interval);
+  }, [target]);
+
+  return <>{count}</>;
+};
+
 const AgentGrid = ({ agents }: AgentGridProps) => {
   return (
     <div className="flex flex-col min-h-0">
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
         Active Agents ({agents.length})
       </h2>
-      <div className="flex-1 overflow-y-auto pr-2 space-y-3" style={{ scrollbarWidth: "thin", scrollbarColor: "hsl(var(--muted)) transparent" }}>
-        {agents.map((agent, i) => (
+      <div
+        className="flex-1 overflow-y-auto pr-2 space-y-3"
+        style={{ scrollbarWidth: "thin", scrollbarColor: "hsl(var(--muted)) transparent", maxHeight: "calc(100vh - 180px)" }}
+      >
+        {agents.map((agent) => (
           <motion.div
             key={agent.id}
             initial={{ opacity: 0, scale: 0.9, y: 12 }}
@@ -63,24 +84,5 @@ const AgentGrid = ({ agents }: AgentGridProps) => {
     </div>
   );
 };
-
-const UpvoteCounter = ({ target }: { target: number }) => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let current = 0;
-    const step = Math.ceil(target / 15);
-    const interval = setInterval(() => {
-      current = Math.min(current + step, target);
-      setCount(current);
-      if (current >= target) clearInterval(interval);
-    }, 120);
-    return () => clearInterval(interval);
-  }, [target]);
-
-  return <>{count}</>;
-};
-
-import { useState, useEffect } from "react";
 
 export default AgentGrid;
