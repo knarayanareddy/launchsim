@@ -571,7 +571,7 @@ function HealthTab() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
+    (supabase as any)
       .from("error_logs")
       .select("id, user_id, error_message, page, created_at")
       .order("created_at", { ascending: false })
@@ -643,8 +643,8 @@ function SettingsTab() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from("feature_flags").select("*"),
-      supabase.from("system_settings").select("*"),
+      (supabase as any).from("feature_flags").select("*"),
+      (supabase as any).from("system_settings").select("*"),
     ]).then(([flagsRes, settingsRes]) => {
       setFlags((flagsRes.data as FeatureFlag[]) || []);
       const settings = (settingsRes.data as any[]) || [];
@@ -658,20 +658,20 @@ function SettingsTab() {
 
   const toggleFlag = async (flag: FeatureFlag) => {
     const newEnabled = !flag.enabled;
-    await supabase.from("feature_flags").update({ enabled: newEnabled } as any).eq("id", flag.id);
+    await (supabase as any).from("feature_flags").update({ enabled: newEnabled }).eq("id", flag.id);
     setFlags((prev) => prev.map((f) => (f.id === flag.id ? { ...f, enabled: newEnabled } : f)));
     toast.success(`${flag.flag_name} ${newEnabled ? "enabled" : "disabled"}`);
   };
 
   const toggleMaintenance = async () => {
     const newVal = !maintenance;
-    await supabase.from("system_settings").update({ value: { enabled: newVal } } as any).eq("key", "maintenance_mode");
+    await (supabase as any).from("system_settings").update({ value: { enabled: newVal } }).eq("key", "maintenance_mode");
     setMaintenance(newVal);
     toast.success(newVal ? "Maintenance mode ON" : "Maintenance mode OFF");
   };
 
   const saveAnnouncement = async () => {
-    await supabase.from("system_settings").update({ value: announcement } as any).eq("key", "announcement");
+    await (supabase as any).from("system_settings").update({ value: announcement }).eq("key", "announcement");
     toast.success("Announcement updated");
   };
 
