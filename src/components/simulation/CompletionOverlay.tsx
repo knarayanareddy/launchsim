@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 
 interface CompletionOverlayProps {
   onViewReport: () => void;
+  score?: number;
 }
 
 const CompletionOverlay = ({ onViewReport }: CompletionOverlayProps) => {
