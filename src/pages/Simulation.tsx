@@ -5,6 +5,7 @@ import AgentGrid from "@/components/simulation/AgentGrid";
 import LiveFeed from "@/components/simulation/LiveFeed";
 import CompletionOverlay from "@/components/simulation/CompletionOverlay";
 import { MOCK_AGENTS, MOCK_FEED, STATUS_MESSAGES } from "@/data/simulationMocks";
+import { useSimulation } from "@/hooks/useSimulation";
 
 const SIMULATION_DURATION = 15000;
 const AGENT_INTERVAL = 650;
@@ -16,27 +17,44 @@ const Simulation = () => {
   const location = useLocation();
   const state = location.state as { description?: string; question?: string; settings?: any } | null;
 
+  const depthLabels = ["quick", "standard", "deep"];
+  const { result: aiResult, loading: aiLoading } = useSimulation(
+    state?.description
+      ? {
+          description: state.description,
+          question: state.question,
+          crowdSize: state.settings?.agentCount,
+          audienceMix: state.settings?.audiences,
+          platform: state.settings?.platform,
+          depth: depthLabels[state.settings?.depth ?? 1],
+        }
+      : null
+  );
+
   const [progress, setProgress] = useState(0);
   const [statusIdx, setStatusIdx] = useState(0);
   const [visibleAgents, setVisibleAgents] = useState(0);
   const [visibleFeed, setVisibleFeed] = useState(0);
-  const [complete, setComplete] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
   const [currentRound, setCurrentRound] = useState(1);
   const totalRounds = 5;
   const startTimeRef = useRef(Date.now());
+
+  const complete = animationComplete && !aiLoading;
+  const finalizing = animationComplete && aiLoading;
 
   useEffect(() => {
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTimeRef.current;
       const pct = Math.min((elapsed / SIMULATION_DURATION) * 100, 100);
       setProgress(pct);
-      if (pct >= 100) { clearInterval(interval); setComplete(true); }
+      if (pct >= 100) { clearInterval(interval); setAnimationComplete(true); }
     }, 50);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    if (complete) return;
+    if (animationComplete) return;
     const interval = setInterval(() => {
       setVisibleAgents((prev) => {
         if (prev >= MOCK_AGENTS.length) { clearInterval(interval); return prev; }
@@ -44,10 +62,10 @@ const Simulation = () => {
       });
     }, AGENT_INTERVAL);
     return () => clearInterval(interval);
-  }, [complete]);
+  }, [animationComplete]);
 
   useEffect(() => {
-    if (complete) return;
+    if (animationComplete) return;
     const interval = setInterval(() => {
       setVisibleFeed((prev) => {
         if (prev >= MOCK_FEED.length) { clearInterval(interval); return prev; }
@@ -55,10 +73,10 @@ const Simulation = () => {
       });
     }, FEED_INTERVAL);
     return () => clearInterval(interval);
-  }, [complete]);
+  }, [animationComplete]);
 
   useEffect(() => {
-    if (complete) return;
+    if (animationComplete) return;
     const interval = setInterval(() => {
       setStatusIdx((prev) => {
         const next = Math.min(prev + 1, STATUS_MESSAGES.length - 1);
@@ -67,11 +85,11 @@ const Simulation = () => {
       });
     }, STATUS_INTERVAL);
     return () => clearInterval(interval);
-  }, [complete]);
+  }, [animationComplete]);
 
   const handleViewReport = useCallback(() => {
-    navigate("/results", { state: location.state });
-  }, [navigate, location.state]);
+    navigate("/results", { state: { ...location.state, aiResult } });
+  }, [navigate, location.state, aiResult]);
 
   return (
     <motion.div
@@ -95,14 +113,14 @@ const Simulation = () => {
             <div className="min-w-0">
               <AnimatePresence mode="wait">
                 <motion.p
-                  key={statusIdx}
+                  key={finalizing ? "finalizing" : statusIdx}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.3 }}
                   className="text-xs md:text-sm font-mono text-foreground truncate"
                 >
-                  {complete ? "✅ Report ready!" : STATUS_MESSAGES[statusIdx]}
+                  {complete ? "✅ Report ready!" : finalizing ? "⏳ Finalizing analysis..." : STATUS_MESSAGES[statusIdx]}
                 </motion.p>
               </AnimatePresence>
             </div>
@@ -118,7 +136,7 @@ const Simulation = () => {
         </div>
       </div>
 
-      {/* Main theater — stacks on mobile */}
+      {/* Main theater */}
       <div className="flex-1 container mx-auto px-4 md:px-6 py-4 md:py-6">
         <div className="grid lg:grid-cols-[3fr_2fr] gap-4 md:gap-6 h-full">
           <AgentGrid agents={MOCK_AGENTS.slice(0, visibleAgents)} />
@@ -127,7 +145,12 @@ const Simulation = () => {
       </div>
 
       <AnimatePresence>
-        {complete && <CompletionOverlay onViewReport={handleViewReport} />}
+        {complete && (
+          <CompletionOverlay
+            onViewReport={handleViewReport}
+            score={aiResult?.overall_score}
+          />
+        )}
       </AnimatePresence>
     </motion.div>
   );
