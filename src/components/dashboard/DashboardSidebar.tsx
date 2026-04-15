@@ -1,4 +1,4 @@
-import { Home, FlaskConical, BookOpen, BarChart3, Settings, ChevronsUpDown } from "lucide-react";
+import { Home, FlaskConical, BookOpen, BarChart3, Settings, ChevronsUpDown, Users } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { title: "My Simulations", url: "/dashboard", icon: BookOpen, emoji: "📚", hash: "#simulations" },
   { title: "Iteration Tracker", url: "/tracker", icon: BarChart3, emoji: "🔁" },
   { title: "Compare", url: "/compare", icon: BarChart3, emoji: "📊" },
+  { title: "Custom Personas", url: "/personas", icon: Users, emoji: "🎭" },
   { title: "Settings", url: "/settings", icon: Settings, emoji: "⚙️" },
 ];
 

@@ -55,6 +55,66 @@ export type Database = {
           },
         ]
       }
+      custom_personas: {
+        Row: {
+          archetype: string
+          cares_about: string[]
+          company_size: string | null
+          company_type: string | null
+          created_at: string
+          emoji: string
+          id: string
+          industry: string | null
+          name: string
+          personality_type: string
+          price_sensitivity: number
+          rejection_triggers: string | null
+          seniority: string | null
+          signature_phrase: string | null
+          skepticism_level: number
+          tech_savviness: number
+          user_id: string
+        }
+        Insert: {
+          archetype: string
+          cares_about?: string[]
+          company_size?: string | null
+          company_type?: string | null
+          created_at?: string
+          emoji?: string
+          id?: string
+          industry?: string | null
+          name: string
+          personality_type: string
+          price_sensitivity?: number
+          rejection_triggers?: string | null
+          seniority?: string | null
+          signature_phrase?: string | null
+          skepticism_level?: number
+          tech_savviness?: number
+          user_id: string
+        }
+        Update: {
+          archetype?: string
+          cares_about?: string[]
+          company_size?: string | null
+          company_type?: string | null
+          created_at?: string
+          emoji?: string
+          id?: string
+          industry?: string | null
+          name?: string
+          personality_type?: string
+          price_sensitivity?: number
+          rejection_triggers?: string | null
+          seniority?: string | null
+          signature_phrase?: string | null
+          skepticism_level?: number
+          tech_savviness?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
