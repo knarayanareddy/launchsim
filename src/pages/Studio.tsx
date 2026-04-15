@@ -1,12 +1,16 @@
-import { useState, useCallback, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import ProductInput from "@/components/studio/ProductInput";
 import SimulationConfig from "@/components/studio/SimulationConfig";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { sanitizeInput } from "@/lib/apiErrors";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface SimulationSettings {
   agentCount: number;
@@ -25,8 +29,17 @@ const DEFAULT_SETTINGS: SimulationSettings = {
 const MIN_DESCRIPTION_CHARS = 50;
 const RATE_LIMIT_MS = 10000;
 
+interface SimGroup {
+  id: string;
+  product_name: string;
+  latest_score: number;
+  simulation_ids: string[];
+}
+
 const Studio = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
   const launchRef = useRef<HTMLDivElement>(null);
   const [description, setDescription] = useState("");
   const [question, setQuestion] = useState("");
@@ -34,6 +47,36 @@ const Studio = () => {
   const [errors, setErrors] = useState<{ description?: string; audiences?: string }>({});
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Iteration state
+  const [iterationType, setIterationType] = useState<"new" | "iteration">("new");
+  const [groups, setGroups] = useState<SimGroup[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [newGroupName, setNewGroupName] = useState("");
+
+  // Prefill from navigation state
+  useEffect(() => {
+    const state = location.state as any;
+    if (state?.prefill) setDescription(state.prefill);
+    if (state?.groupId) {
+      setIterationType("iteration");
+      setSelectedGroupId(state.groupId);
+    }
+  }, [location.state]);
+
+  // Fetch groups when iteration selected
+  useEffect(() => {
+    if (iterationType === "iteration" && user) {
+      supabase
+        .from("simulation_groups")
+        .select("id, product_name, latest_score, simulation_ids")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false })
+        .then(({ data }) => {
+          setGroups((data as any[]) || []);
+        });
+    }
+  }, [iterationType, user]);
 
   const startCooldown = useCallback(() => {
     setCooldown(10);
@@ -75,7 +118,13 @@ const Studio = () => {
     startCooldown();
 
     navigate("/simulation", {
-      state: { description: cleanDescription, question: sanitizeInput(question), settings },
+      state: {
+        description: cleanDescription,
+        question: sanitizeInput(question),
+        settings,
+        groupId: iterationType === "iteration" ? selectedGroupId : null,
+        newGroupName: iterationType === "iteration" && !selectedGroupId ? newGroupName : null,
+      },
     });
   }, [description, question, settings, navigate, cooldown, startCooldown]);
 
