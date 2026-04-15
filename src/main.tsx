@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { HelmetProvider } from "react-helmet-async";
 import { checkEnvVars } from "./lib/envCheck";
 import App from "./App.tsx";
 import "./index.css";
@@ -14,5 +15,9 @@ if (!ok && import.meta.env.PROD) {
       </div>
     </div>`;
 } else {
-  createRoot(document.getElementById("root")!).render(<App />);
+  createRoot(document.getElementById("root")!).render(
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
+  );
 }

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
+import SEO from "@/components/SEO";
 import { MOCK_WIKI_SIMULATIONS } from "@/data/wikiMocks";
 
 const SCORE_FILTERS = [
