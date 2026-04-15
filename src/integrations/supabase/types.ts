@@ -61,6 +61,7 @@ export type Database = {
           created_at: string
           credits_remaining: number
           email: string | null
+          email_prefs: Json
           full_name: string | null
           id: string
           onboarding_completed: boolean
@@ -74,6 +75,7 @@ export type Database = {
           created_at?: string
           credits_remaining?: number
           email?: string | null
+          email_prefs?: Json
           full_name?: string | null
           id: string
           onboarding_completed?: boolean
@@ -87,6 +89,7 @@ export type Database = {
           created_at?: string
           credits_remaining?: number
           email?: string | null
+          email_prefs?: Json
           full_name?: string | null
           id?: string
           onboarding_completed?: boolean
