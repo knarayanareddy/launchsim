@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { handleApiError } from "@/lib/apiErrors";
 import {
   SENTIMENT_BY_AUDIENCE,
   TOP_OBJECTIONS,
@@ -104,6 +105,7 @@ export function useSimulation(params: UseSimulationParams | null) {
         setResult({ ...data, usingMockData: false });
       } catch (err) {
         console.error("Simulation API error, falling back to mock:", err);
+        handleApiError(err, { fallbackMessage: "Simulation failed — showing demo results instead." });
         setError(err instanceof Error ? err.message : "Unknown error");
         setResult(buildMockResult());
       } finally {

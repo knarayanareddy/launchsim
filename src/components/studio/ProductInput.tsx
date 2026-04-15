@@ -68,6 +68,9 @@ const ProductInput = ({
         {descriptionError && (
           <p className="text-destructive text-xs mt-2 font-mono">{descriptionError}</p>
         )}
+        {!descriptionError && charGuidance && (
+          <p className="text-warning text-xs mt-2 font-mono">{charGuidance}</p>
+        )}
 
         {/* Quick-fill examples */}
         <div className="flex flex-wrap gap-2 mt-3">
