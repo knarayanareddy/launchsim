@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -22,6 +22,7 @@ const DEFAULT_SETTINGS: SimulationSettings = {
 
 const Studio = () => {
   const navigate = useNavigate();
+  const launchRef = useRef<HTMLDivElement>(null);
   const [description, setDescription] = useState("");
   const [question, setQuestion] = useState("");
   const [settings, setSettings] = useState<SimulationSettings>(DEFAULT_SETTINGS);
@@ -34,6 +35,9 @@ const Studio = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      // Shake the button
+      launchRef.current?.classList.add("shake");
+      setTimeout(() => launchRef.current?.classList.remove("shake"), 500);
       return;
     }
 
@@ -106,6 +110,7 @@ const Studio = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="mt-10"
+          ref={launchRef}
         >
           <Button
             size="lg"
