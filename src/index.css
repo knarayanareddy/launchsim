@@ -108,3 +108,21 @@
     background-size: 60px 60px;
   }
 }
+
+@keyframes swarmFloat0 {
+  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); }
+  33% { transform: translate(-50%, -50%) translate(8px, -10px); }
+  66% { transform: translate(-50%, -50%) translate(-6px, 6px); }
+}
+
+@keyframes swarmFloat1 {
+  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); }
+  33% { transform: translate(-50%, -50%) translate(-10px, 8px); }
+  66% { transform: translate(-50%, -50%) translate(6px, -8px); }
+}
+
+@keyframes swarmFloat2 {
+  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); }
+  33% { transform: translate(-50%, -50%) translate(6px, 12px); }
+  66% { transform: translate(-50%, -50%) translate(-8px, -6px); }
+}

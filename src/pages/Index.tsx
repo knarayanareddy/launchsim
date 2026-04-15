@@ -1,19 +1,21 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import FeaturesSection from "@/components/FeaturesSection";
-import AgentPreviewSection from "@/components/AgentPreviewSection";
-import ChartPreviewSection from "@/components/ChartPreviewSection";
-import CTASection from "@/components/CTASection";
+import StatsStrip from "@/components/StatsStrip";
+import HowItWorksSection from "@/components/HowItWorksSection";
+import PersonaShowcase from "@/components/PersonaShowcase";
+import SocialProofCTA from "@/components/SocialProofCTA";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen scroll-smooth">
       <Navbar />
       <HeroSection />
-      <FeaturesSection />
-      <AgentPreviewSection />
-      <ChartPreviewSection />
-      <CTASection />
+      <StatsStrip />
+      <HowItWorksSection />
+      <PersonaShowcase />
+      <SocialProofCTA />
+      <Footer />
     </div>
   );
 };
