@@ -1,107 +1,97 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import heroBg from "@/assets/hero-bg.jpg";
+import AgentSwarm from "@/components/AgentSwarm";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background image */}
-      <div className="absolute inset-0">
-        <img
-          src={heroBg}
-          alt=""
-          className="w-full h-full object-cover opacity-30"
-          width={1920}
-          height={1080}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
-      </div>
+    <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
+      {/* Radial glow effects */}
+      <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-secondary/5 blur-[100px] pointer-events-none" />
 
-      {/* Grid overlay */}
-      <div className="absolute inset-0 bg-grid opacity-40" />
+      <div className="container mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left side - Copy */}
+          <div className="max-w-xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 mb-8">
+                <span className="h-2 w-2 rounded-full bg-secondary animate-pulse-glow" />
+                <span className="font-mono text-xs text-primary tracking-wider uppercase">
+                  Powered by Swarm Intelligence
+                </span>
+              </div>
+            </motion.div>
 
-      <div className="relative z-10 container mx-auto px-6 text-center max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 mb-8">
-            <span className="h-2 w-2 rounded-full bg-secondary animate-pulse-glow" />
-            <span className="font-mono text-xs text-primary tracking-wider uppercase">
-              Simulation Engine v1.0
-            </span>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] mb-6"
+            >
+              What if 1,000 users reacted to your idea{" "}
+              <span className="text-primary">RIGHT NOW?</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg text-muted-foreground mb-8 leading-relaxed"
+            >
+              Paste your product description. Watch AI personas debate it. Ship
+              with confidence.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col sm:flex-row gap-3 mb-6"
+            >
+              <Button
+                size="lg"
+                onClick={() => navigate("/studio")}
+                className="rounded-full px-8 py-6 text-base font-semibold glow-primary bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Simulate My Launch →
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => navigate("/results")}
+                className="rounded-full px-8 py-6 text-base font-semibold border-border text-foreground hover:bg-muted/30"
+              >
+                See Example Report
+              </Button>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-muted-foreground text-xs font-mono"
+            >
+              Join 847 founders who've already simulated their launch
+            </motion.p>
           </div>
-        </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15 }}
-          className="text-5xl md:text-7xl font-black tracking-tight leading-[1.05] mb-6"
-        >
-          <span className="text-gradient-hero">Launch with</span>
-          <br />
-          <span className="text-foreground">Confidence, Not Hope</span>
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
-        >
-          Feed your product idea into LaunchSim's AI agents. Get brutally honest
-          feedback from synthetic users, investors, and critics —{" "}
-          <span className="text-foreground font-medium">before you ship a single line of code.</span>
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.45 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          <Button
-            size="lg"
-            className="rounded-full px-8 py-6 text-base font-semibold glow-primary bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
+          {/* Right side - Agent swarm */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="hidden lg:block"
           >
-            Run Your First Simulation
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-full px-8 py-6 text-base font-semibold border-border hover:bg-muted/50 text-foreground"
-          >
-            Watch Demo
-          </Button>
-        </motion.div>
-
-        {/* Terminal-style stats bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.7 }}
-          className="mt-16 glass-card rounded-xl p-4 max-w-2xl mx-auto"
-        >
-          <div className="flex items-center justify-between flex-wrap gap-4 font-mono text-xs">
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-success" />
-              <span className="text-muted-foreground">SIMULATIONS RUN</span>
-              <span className="text-foreground font-bold">12,847</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              <span className="text-muted-foreground">AGENTS ACTIVE</span>
-              <span className="text-foreground font-bold">6</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-warning" />
-              <span className="text-muted-foreground">AVG SCORE</span>
-              <span className="text-foreground font-bold">7.4/10</span>
-            </div>
-          </div>
-        </motion.div>
+            <AgentSwarm />
+          </motion.div>
+        </div>
       </div>
     </section>
   );
