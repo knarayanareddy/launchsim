@@ -123,10 +123,26 @@ const Results = () => {
         path="/results"
         noIndex
       />
+      {/* Mode indicator */}
+      <div className="fixed top-3 right-4 z-50">
+        {aiResult && !aiResult.usingMockData && (
+          <div className="flex items-center gap-1.5 bg-success/10 border border-success/30 rounded-full px-3 py-1" title="Responses generated specifically for your product">
+            <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+            <span className="text-[10px] font-mono text-success">Live AI Mode</span>
+          </div>
+        )}
+        {aiResult?.usingMockData && (
+          <div className="flex items-center gap-1.5 bg-warning/10 border border-warning/30 rounded-full px-3 py-1" title="Showing example data">
+            <div className="w-2 h-2 rounded-full bg-warning" />
+            <span className="text-[10px] font-mono text-warning">Demo Mode</span>
+          </div>
+        )}
+      </div>
+
       {/* Demo data banner */}
       {aiResult?.usingMockData && (
         <div className="bg-warning/10 border-b border-warning/30 px-4 py-2 text-center">
-          <span className="text-xs text-warning font-mono">⚠️ Using demo data — AI generation failed or is unavailable</span>
+          <span className="text-xs text-warning font-mono">⚠️ Running in demo mode — AI generation failed or is unavailable</span>
         </div>
       )}
 
