@@ -97,6 +97,39 @@ export type Database = {
         }
         Relationships: []
       }
+      simulation_groups: {
+        Row: {
+          created_at: string
+          id: string
+          latest_score: number
+          product_name: string
+          score_delta: number
+          simulation_ids: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          latest_score?: number
+          product_name: string
+          score_delta?: number
+          simulation_ids?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          latest_score?: number
+          product_name?: string
+          score_delta?: number
+          simulation_ids?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       simulations: {
         Row: {
           agent_posts: Json | null
@@ -104,6 +137,7 @@ export type Database = {
           created_at: string
           crowd_size: number
           depth: string
+          group_id: string | null
           id: string
           key_quote: string | null
           key_quote_agent: string | null
@@ -124,6 +158,7 @@ export type Database = {
           created_at?: string
           crowd_size?: number
           depth?: string
+          group_id?: string | null
           id?: string
           key_quote?: string | null
           key_quote_agent?: string | null
@@ -144,6 +179,7 @@ export type Database = {
           created_at?: string
           crowd_size?: number
           depth?: string
+          group_id?: string | null
           id?: string
           key_quote?: string | null
           key_quote_agent?: string | null
@@ -158,7 +194,15 @@ export type Database = {
           top_strengths?: Json | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "simulations_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "simulation_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

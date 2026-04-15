@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { title: "Dashboard", url: "/dashboard", icon: Home, emoji: "🏠" },
   { title: "New Simulation", url: "/studio", icon: FlaskConical, emoji: "🧪" },
   { title: "My Simulations", url: "/dashboard", icon: BookOpen, emoji: "📚", hash: "#simulations" },
+  { title: "Iteration Tracker", url: "/tracker", icon: BarChart3, emoji: "🔁" },
   { title: "Compare", url: "/compare", icon: BarChart3, emoji: "📊" },
   { title: "Settings", url: "/settings", icon: Settings, emoji: "⚙️" },
 ];

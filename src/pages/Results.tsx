@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { FileDown, Lock, Loader2, Send } from "lucide-react";
@@ -218,8 +219,73 @@ const Results = () => {
           description={description}
         />
       )}
+
+      {/* Iteration CTA */}
+      <div className="container mx-auto px-6 mt-10">
+        <IterationFooterCTA description={description} />
+      </div>
     </div>
   );
 };
+
+// Iteration footer CTA component
+function IterationFooterCTA({ description }: { description: string }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [groups, setGroups] = useState<{ id: string; product_name: string }[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<string>("");
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("simulation_groups")
+      .select("id, product_name")
+      .eq("user_id", user.id)
+      .order("updated_at", { ascending: false })
+      .then(({ data }) => setGroups((data as any[]) || []));
+  }, [user]);
+
+  return (
+    <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+      <p className="text-sm font-semibold text-foreground mb-1">Made changes based on this feedback?</p>
+      <p className="text-xs text-muted-foreground mb-4">Track your improvement across iterations</p>
+      <div className="flex flex-wrap items-center gap-3">
+        {groups.length > 0 && (
+          <select
+            value={selectedGroup}
+            onChange={(e) => setSelectedGroup(e.target.value)}
+            className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          >
+            <option value="">Add as iteration of...</option>
+            {groups.map((g) => (
+              <option key={g.id} value={g.id}>{g.product_name}</option>
+            ))}
+          </select>
+        )}
+        <Button
+          size="sm"
+          variant="outline"
+          className="text-xs h-8 border-white/10"
+          onClick={() => navigate("/studio", {
+            state: {
+              prefill: description,
+              groupId: selectedGroup || undefined,
+            },
+          })}
+        >
+          Re-run as iteration →
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-xs h-8"
+          onClick={() => navigate("/tracker")}
+        >
+          View Tracker →
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 export default Results;
