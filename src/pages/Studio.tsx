@@ -1,10 +1,12 @@
 import { useState, useCallback, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import ProductInput from "@/components/studio/ProductInput";
 import SimulationConfig from "@/components/studio/SimulationConfig";
 import { Button } from "@/components/ui/button";
+import { sanitizeInput } from "@/lib/apiErrors";
 
 export interface SimulationSettings {
   agentCount: number;
@@ -20,6 +22,9 @@ const DEFAULT_SETTINGS: SimulationSettings = {
   depth: 1,
 };
 
+const MIN_DESCRIPTION_CHARS = 50;
+const RATE_LIMIT_MS = 10000;
+
 const Studio = () => {
   const navigate = useNavigate();
   const launchRef = useRef<HTMLDivElement>(null);
@@ -27,25 +32,58 @@ const Studio = () => {
   const [question, setQuestion] = useState("");
   const [settings, setSettings] = useState<SimulationSettings>(DEFAULT_SETTINGS);
   const [errors, setErrors] = useState<{ description?: string; audiences?: string }>({});
+  const [cooldown, setCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startCooldown = useCallback(() => {
+    setCooldown(10);
+    cooldownRef.current = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) {
+          if (cooldownRef.current) clearInterval(cooldownRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
 
   const handleRun = useCallback(() => {
+    if (cooldown > 0) return;
+
     const newErrors: typeof errors = {};
-    if (!description.trim()) newErrors.description = "Add your product description to continue";
-    if (settings.audiences.length === 0) newErrors.audiences = "Select at least one audience type";
+    const cleanDescription = sanitizeInput(description);
+
+    if (!cleanDescription) {
+      newErrors.description = "Add your product description to continue";
+    } else if (cleanDescription.length < MIN_DESCRIPTION_CHARS) {
+      newErrors.description = `Description must be at least ${MIN_DESCRIPTION_CHARS} characters (currently ${cleanDescription.length})`;
+    }
+
+    if (settings.audiences.length === 0) {
+      newErrors.audiences = "Select at least one audience type";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      // Shake the button
       launchRef.current?.classList.add("shake");
       setTimeout(() => launchRef.current?.classList.remove("shake"), 500);
       return;
     }
 
     setErrors({});
+    startCooldown();
+
     navigate("/simulation", {
-      state: { description, question, settings },
+      state: { description: cleanDescription, question: sanitizeInput(question), settings },
     });
-  }, [description, question, settings, navigate]);
+  }, [description, question, settings, navigate, cooldown, startCooldown]);
+
+  const charCount = description.length;
+  const charGuidance =
+    charCount > 0 && charCount < MIN_DESCRIPTION_CHARS
+      ? `${MIN_DESCRIPTION_CHARS - charCount} more characters needed`
+      : null;
 
   return (
     <div className="min-h-screen">
@@ -87,6 +125,7 @@ const Studio = () => {
               setQuestion={setQuestion}
               descriptionError={errors.description}
               clearError={() => setErrors((e) => ({ ...e, description: undefined }))}
+              charGuidance={charGuidance}
             />
           </motion.div>
 
@@ -115,10 +154,13 @@ const Studio = () => {
           <Button
             size="lg"
             onClick={handleRun}
-            className="w-full rounded-xl py-6 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 glow-primary group relative overflow-hidden transition-all"
+            disabled={cooldown > 0}
+            className="w-full rounded-xl py-6 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 glow-primary group relative overflow-hidden transition-all disabled:opacity-50"
           >
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
-            <span className="relative z-10">🐟 Run Simulation</span>
+            <span className="relative z-10">
+              {cooldown > 0 ? `⏳ Wait ${cooldown}s` : "🐟 Run Simulation"}
+            </span>
           </Button>
           <p className="text-center text-muted-foreground text-xs font-mono mt-3">
             Your results will be ready in under 60 seconds
