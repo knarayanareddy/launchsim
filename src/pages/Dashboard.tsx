@@ -95,6 +95,19 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="max-w-6xl mx-auto space-y-8">
+        {/* Resume onboarding banner */}
+        {profile && !profile.onboarding_completed && (
+          <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-foreground">You haven't finished onboarding yet</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Complete setup to get the most out of LaunchSim</p>
+            </div>
+            <Button size="sm" onClick={() => navigate("/onboarding")} className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs">
+              Resume onboarding →
+            </Button>
+          </div>
+        )}
+
         {/* Title */}
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
