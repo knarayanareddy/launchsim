@@ -2,13 +2,16 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Menu, X, Settings, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, profile, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -31,6 +34,18 @@ const Navbar = () => {
     }
     setMenuOpen(false);
   };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
+  const initials = (profile?.full_name || user?.email || "?")
+    .split(" ")
+    .map((s) => s[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <>
@@ -69,13 +84,60 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button
-              onClick={() => navigate("/studio")}
-              size="sm"
-              className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm px-5 font-semibold btn-shimmer touch-target"
-            >
-              Start Simulation
-            </Button>
+            {user ? (
+              <>
+                <Button
+                  onClick={() => navigate("/studio")}
+                  size="sm"
+                  className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm px-5 font-semibold btn-shimmer touch-target"
+                >
+                  Go to Studio
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary hover:bg-primary/30 transition-colors overflow-hidden">
+                      {profile?.avatar_url ? (
+                        <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        initials
+                      )}
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-card border-border w-48">
+                    <div className="px-3 py-2">
+                      <p className="text-sm font-medium text-foreground truncate">{profile?.full_name || "User"}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2 cursor-pointer">
+                      <Settings className="w-4 h-4" /> Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="gap-2 cursor-pointer text-destructive focus:text-destructive">
+                      <LogOut className="w-4 h-4" /> Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/login")}
+                  className="text-sm text-muted-foreground hover:text-foreground touch-target"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  onClick={() => navigate("/signup")}
+                  size="sm"
+                  className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm px-5 font-semibold btn-shimmer touch-target"
+                >
+                  Start Simulation
+                </Button>
+              </>
+            )}
 
             {/* Mobile hamburger */}
             <button
@@ -128,12 +190,46 @@ const Navbar = () => {
                   Wiki
                 </Link>
                 <div className="border-t border-border pt-4 mt-4">
-                  <Button
-                    onClick={() => { navigate("/studio"); setMenuOpen(false); }}
-                    className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold btn-shimmer touch-target"
-                  >
-                    Start Simulation
-                  </Button>
+                  {user ? (
+                    <div className="space-y-2">
+                      <Button
+                        onClick={() => { navigate("/studio"); setMenuOpen(false); }}
+                        className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold btn-shimmer touch-target"
+                      >
+                        Go to Studio
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => { navigate("/settings"); setMenuOpen(false); }}
+                        className="w-full justify-start text-muted-foreground"
+                      >
+                        <Settings className="w-4 h-4 mr-2" /> Settings
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => { handleSignOut(); setMenuOpen(false); }}
+                        className="w-full justify-start text-destructive"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" /> Sign Out
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Button
+                        onClick={() => { navigate("/signup"); setMenuOpen(false); }}
+                        className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold btn-shimmer touch-target"
+                      >
+                        Start Simulation
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => { navigate("/login"); setMenuOpen(false); }}
+                        className="w-full text-muted-foreground"
+                      >
+                        Sign In
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
