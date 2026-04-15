@@ -22,7 +22,6 @@ const LiveFeed = ({ items, progress }: LiveFeedProps) => {
     EMERGING_THEMES.length
   );
 
-  // Sentiment ratios that shift as agents come in
   const excited = 35 + Math.min(progress * 0.1, 8);
   const skeptical = 28 - Math.min(progress * 0.05, 3);
   const neutral = 22;
@@ -35,19 +34,20 @@ const LiveFeed = ({ items, progress }: LiveFeedProps) => {
   }, [items.length]);
 
   return (
-    <div className="flex flex-col min-h-0 glass-card rounded-xl p-4 lg:p-5">
+    <div className="flex flex-col min-h-0 glass-card rounded-xl p-4 lg:p-5 !transform-none hover:!transform-none">
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
         Live Debate Feed
       </h2>
 
       {/* Emerging themes */}
       <div className="flex flex-wrap gap-1.5 mb-4">
-        {EMERGING_THEMES.slice(0, visibleThemes).map((theme, i) => (
+        {EMERGING_THEMES.slice(0, visibleThemes).map((theme) => (
           <motion.span
             key={theme}
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-[11px] px-2.5 py-1 rounded-full glass-card font-medium text-muted-foreground"
+            transition={{ type: "spring", stiffness: 500, damping: 15 }}
+            className="text-[11px] px-2.5 py-1 rounded-full glass-card font-medium text-muted-foreground !transform-none"
           >
             {theme}
           </motion.span>
@@ -64,10 +64,10 @@ const LiveFeed = ({ items, progress }: LiveFeedProps) => {
           {items.map((item) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className={`rounded-lg border border-border/50 bg-muted/20 p-3 ${item.isReply ? "ml-6 border-l-2 border-l-primary/30" : ""}`}
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className={`rounded-lg border border-border/50 bg-muted/20 p-3 ${item.isReply ? "ml-4 md:ml-6 border-l-2 border-l-primary/30" : ""}`}
             >
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="text-sm">{item.agentEmoji}</span>
@@ -102,26 +102,10 @@ const LiveFeed = ({ items, progress }: LiveFeedProps) => {
           <span>{items.length} posts</span>
         </div>
         <div className="h-2.5 rounded-full overflow-hidden flex bg-muted">
-          <div
-            className="h-full bg-success transition-all duration-1000"
-            style={{ width: `${excited}%` }}
-            title={`Excited ${Math.round(excited)}%`}
-          />
-          <div
-            className="h-full bg-warning transition-all duration-1000"
-            style={{ width: `${skeptical}%` }}
-            title={`Skeptical ${Math.round(skeptical)}%`}
-          />
-          <div
-            className="h-full bg-muted-foreground/30 transition-all duration-1000"
-            style={{ width: `${neutral}%` }}
-            title={`Neutral ${Math.round(neutral)}%`}
-          />
-          <div
-            className="h-full bg-destructive transition-all duration-1000"
-            style={{ width: `${hostile}%` }}
-            title={`Hostile ${Math.round(hostile)}%`}
-          />
+          <div className="h-full bg-success" style={{ width: `${excited}%`, transition: "width 1s ease" }} />
+          <div className="h-full bg-warning" style={{ width: `${skeptical}%`, transition: "width 1s ease" }} />
+          <div className="h-full bg-muted-foreground/30" style={{ width: `${neutral}%`, transition: "width 1s ease" }} />
+          <div className="h-full bg-destructive" style={{ width: `${hostile}%`, transition: "width 1s ease" }} />
         </div>
         <div className="flex items-center justify-between text-[9px] text-muted-foreground mt-1">
           <span>🟢 Excited</span>

@@ -24,23 +24,20 @@ const AgentSwarm = () => {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
     const nodes = container.querySelectorAll<HTMLElement>(".swarm-node");
     nodes.forEach((node, i) => {
-      const delay = i * 0.3;
-      const duration = 4 + Math.random() * 3;
-      const xDrift = 8 + Math.random() * 12;
-      const yDrift = 8 + Math.random() * 12;
-      node.style.animation = `swarmFloat${i % 3} ${duration}s ${delay}s ease-in-out infinite`;
+      const delay = (i * 0.4 + Math.random() * 0.5).toFixed(2);
+      const duration = (3 + Math.random() * 4).toFixed(2);
+      const variant = i % 5; // 5 different float keyframes
+      node.style.animation = `swarmFloat${variant} ${duration}s ${delay}s ease-in-out infinite`;
     });
   }, []);
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full min-h-[320px] md:min-h-[400px]"
+      className="relative w-full h-full min-h-[280px] md:min-h-[400px]"
     >
-      {/* Connection lines - SVG */}
       <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
         {AGENTS.slice(0, 10).map((agent, i) => {
           const next = AGENTS[(i + 3) % AGENTS.length];
@@ -58,7 +55,6 @@ const AgentSwarm = () => {
         })}
       </svg>
 
-      {/* Agent nodes */}
       {AGENTS.map((agent, i) => (
         <div
           key={i}
@@ -70,21 +66,8 @@ const AgentSwarm = () => {
             zIndex: 1,
           }}
         >
-          <div
-            className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full glass-card"
-            style={{
-              animationDelay: `${i * 0.2}s`,
-              opacity: 0.6 + Math.random() * 0.4,
-            }}
-          >
+          <div className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full glass-card !transform-none">
             <span className="text-lg md:text-xl">{agent.emoji}</span>
-            <div
-              className="absolute inset-0 rounded-full animate-pulse-glow"
-              style={{
-                boxShadow: `0 0 ${12 + i * 2}px rgba(79, 142, 247, ${0.05 + (i % 3) * 0.03})`,
-                animationDelay: `${i * 0.4}s`,
-              }}
-            />
           </div>
         </div>
       ))}

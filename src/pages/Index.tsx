@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen scroll-smooth">
+    <div className="min-h-screen scroll-smooth bg-animated-gradient">
       <Navbar />
       <HeroSection />
       <StatsStrip />

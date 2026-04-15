@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
+import AnimatedCounter from "@/components/AnimatedCounter";
 
 const stats = [
-  { value: "1,247", label: "Simulations Run" },
-  { value: "23", label: "Persona Types" },
-  { value: "94%", label: "Found Critical Objections" },
-  { value: "8 min", label: "Avg. Time to Insight" },
+  { value: 1247, label: "Simulations Run", suffix: "" },
+  { value: 23, label: "Persona Types", suffix: "" },
+  { value: 94, label: "Found Critical Objections", suffix: "%" },
+  { value: 8, label: "Avg. Time to Insight", suffix: " min" },
 ];
 
 const StatsStrip = () => {
@@ -21,10 +22,10 @@ const StatsStrip = () => {
               transition={{ delay: i * 0.1 }}
               className="text-center"
             >
-              <div className="text-2xl md:text-3xl font-black text-foreground font-mono">
-                {stat.value}
+              <div className="text-2xl md:text-3xl font-black text-foreground">
+                <AnimatedCounter target={stat.value} suffix={stat.suffix} duration={1000} />
               </div>
-              <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
+              <div className="text-[10px] md:text-xs text-muted-foreground mt-1 uppercase tracking-wider">
                 {stat.label}
               </div>
             </motion.div>

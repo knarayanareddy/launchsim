@@ -39,6 +39,10 @@ const UpvoteCounter = ({ target }: { target: number }) => {
 };
 
 const AgentGrid = ({ agents }: AgentGridProps) => {
+  const [showAll, setShowAll] = useState(false);
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const visibleAgents = isMobile && !showAll ? agents.slice(0, 6) : agents;
+
   return (
     <div className="flex flex-col min-h-0">
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
@@ -46,15 +50,15 @@ const AgentGrid = ({ agents }: AgentGridProps) => {
       </h2>
       <div
         className="flex-1 overflow-y-auto pr-2 space-y-3"
-        style={{ scrollbarWidth: "thin", scrollbarColor: "hsl(var(--muted)) transparent", maxHeight: "calc(100vh - 180px)" }}
+        style={{ scrollbarWidth: "thin", scrollbarColor: "hsl(var(--muted)) transparent", maxHeight: "calc(100vh - 200px)" }}
       >
-        {agents.map((agent) => (
+        {visibleAgents.map((agent, i) => (
           <motion.div
             key={agent.id}
-            initial={{ opacity: 0, scale: 0.9, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            className="glass-card rounded-xl p-4 hover:border-primary/15 transition-colors"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: i * 0.18, ease: [0.34, 1.56, 0.64, 1] }}
+            className="glass-card rounded-xl p-4 !transform-none hover:!transform-none"
           >
             <div className="flex gap-3">
               <div className="flex-shrink-0 text-2xl mt-0.5">{agent.emoji}</div>
@@ -71,7 +75,7 @@ const AgentGrid = ({ agents }: AgentGridProps) => {
                   <TypewriterText text={agent.reaction} speed={18} />
                 </div>
                 <div className="flex items-center gap-3 mt-2">
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground font-mono">
                     👍 <UpvoteCounter target={agent.upvotes} />
                   </span>
                   <span className="text-xs text-muted-foreground">2 min ago</span>
@@ -81,6 +85,14 @@ const AgentGrid = ({ agents }: AgentGridProps) => {
           </motion.div>
         ))}
       </div>
+      {isMobile && !showAll && agents.length > 6 && (
+        <button
+          onClick={() => setShowAll(true)}
+          className="mt-3 text-xs text-primary font-medium touch-target"
+        >
+          Show {agents.length - 6} more agents ↓
+        </button>
+      )}
     </div>
   );
 };
