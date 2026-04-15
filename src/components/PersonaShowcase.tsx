@@ -1,115 +1,60 @@
 import { motion } from "framer-motion";
-import { useRef } from "react";
 
 const personas = [
-  {
-    emoji: "🧑‍💼",
-    name: "Marcus Chen",
-    role: "Senior PM",
-    badge: "🟡 Pragmatist",
-    quote: '"Show me the retention metrics first."',
-  },
-  {
-    emoji: "👩‍💻",
-    name: "Priya Sharma",
-    role: "Developer",
-    badge: "🔴 Tough Crowd",
-    quote: '"Another wrapper? What\'s actually novel here?"',
-  },
-  {
-    emoji: "💰",
-    name: "Alex Rivera",
-    role: "VC Partner",
-    badge: "🟡 Pragmatist",
-    quote: '"Market size checks out. What\'s the moat?"',
-  },
-  {
-    emoji: "😤",
-    name: "Jordan Kim",
-    role: "Skeptic",
-    badge: "🔴 Tough Crowd",
-    quote: '"We\'ve seen this exact pitch 10 times this year."',
-  },
-  {
-    emoji: "✅",
-    name: "Sam Taylor",
-    role: "Early Adopter",
-    badge: "🟢 Early Adopter",
-    quote: '"I\'d switch from my current tool for this immediately."',
-  },
-  {
-    emoji: "🏢",
-    name: "Morgan Lee",
-    role: "Enterprise Buyer",
-    badge: "🟡 Pragmatist",
-    quote: '"Does it integrate with Salesforce and have SSO?"',
-  },
-  {
-    emoji: "🚀",
-    name: "Casey Patel",
-    role: "Founder",
-    badge: "🟢 Early Adopter",
-    quote: '"Clean positioning. I get it in 5 seconds."',
-  },
-  {
-    emoji: "📊",
-    name: "Riley Adams",
-    role: "Analyst",
-    badge: "🟡 Pragmatist",
-    quote: '"The unit economics story needs more work."',
-  },
+  { emoji: "🧑‍💼", name: "Marcus Chen", role: "Senior PM", badge: "Pragmatist", badgeColor: "text-warning", quote: '"Show me the retention metrics first."' },
+  { emoji: "👩‍💻", name: "Priya Sharma", role: "Developer", badge: "Skeptic", badgeColor: "text-destructive", quote: '"Another wrapper? What\'s actually novel here?"' },
+  { emoji: "💰", name: "Alex Rivera", role: "VC Partner", badge: "Pragmatist", badgeColor: "text-warning", quote: '"Market size checks out. What\'s the moat?"' },
+  { emoji: "😤", name: "Jordan Kim", role: "Skeptic", badge: "Skeptic", badgeColor: "text-destructive", quote: '"We\'ve seen this exact pitch 10 times this year."' },
+  { emoji: "✅", name: "Sam Taylor", role: "Early Adopter", badge: "Advocate", badgeColor: "text-success", quote: '"I\'d switch from my current tool for this immediately."' },
+  { emoji: "🏢", name: "Morgan Lee", role: "Enterprise Buyer", badge: "Pragmatist", badgeColor: "text-warning", quote: '"Does it integrate with Salesforce and have SSO?"' },
+  { emoji: "🚀", name: "Casey Patel", role: "Founder", badge: "Advocate", badgeColor: "text-success", quote: '"Clean positioning. I get it in 5 seconds."' },
+  { emoji: "📊", name: "Riley Adams", role: "Analyst", badge: "Analyst", badgeColor: "text-primary", quote: '"The unit economics story needs more work."' },
 ];
 
 const PersonaShowcase = () => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   return (
-    <section id="personas" className="py-24 relative overflow-hidden">
-      <div className="container mx-auto px-6 mb-10">
+    <section id="personas" className="py-28 relative">
+      <div className="container mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center"
+          className="text-center mb-6"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">
-            Meet your <span className="text-secondary">critics</span>{" "}
-            <span className="text-muted-foreground">(before your real users do)</span>
-          </h2>
+          <span className="text-xs text-muted-foreground tracking-widest uppercase">Persona Types</span>
         </motion.div>
-      </div>
+        <motion.h2
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-16 leading-tight"
+        >
+          Meet your <span className="text-secondary">critics</span>{" "}
+          <span className="text-muted-foreground/60">before your real users do.</span>
+        </motion.h2>
 
-      <div
-        ref={scrollRef}
-        className="flex gap-4 overflow-x-auto px-6 pb-4 snap-x snap-mandatory scrollbar-hide"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-      >
-        {/* Left spacer */}
-        <div className="flex-shrink-0 w-[calc((100vw-1400px)/2)]" />
-
-        {personas.map((p, i) => (
-          <motion.div
-            key={p.name}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.08 }}
-            className="flex-shrink-0 w-[280px] snap-start glass-card rounded-xl p-5 hover:border-primary/20 transition-colors"
-          >
-            <div className="text-3xl mb-3">{p.emoji}</div>
-            <h3 className="font-semibold text-sm">{p.name}</h3>
-            <p className="text-muted-foreground text-xs mb-2">{p.role}</p>
-            <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-muted/50 mb-3">
-              {p.badge}
-            </span>
-            <p className="font-mono text-xs text-muted-foreground leading-relaxed italic">
-              {p.quote}
-            </p>
-          </motion.div>
-        ))}
-
-        {/* Right spacer */}
-        <div className="flex-shrink-0 w-6" />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+          {personas.map((p, i) => (
+            <motion.div
+              key={p.name}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+              className="rounded-xl border border-border/40 bg-card/50 p-5 hover:border-primary/20 transition-all duration-300"
+            >
+              <div className="text-3xl mb-3">{p.emoji}</div>
+              <h3 className="text-sm font-semibold text-foreground">{p.name}</h3>
+              <p className="text-xs text-muted-foreground mb-2">{p.role}</p>
+              <span className={`text-[10px] font-mono ${p.badgeColor} tracking-wide`}>
+                ● {p.badge}
+              </span>
+              <p className="font-mono text-xs text-muted-foreground/80 leading-relaxed mt-3 italic">
+                {p.quote}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );

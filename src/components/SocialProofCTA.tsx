@@ -6,28 +6,39 @@ const SocialProofCTA = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-24 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
+    <section className="py-32 relative">
       <div className="container mx-auto px-6 max-w-2xl text-center relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Don't launch blind
+          <h2 className="text-3xl md:text-5xl font-bold mb-5 leading-tight">
+            Start simulating{" "}
+            <br className="hidden sm:block" />
+            your dream launch.
           </h2>
-          <p className="text-muted-foreground text-lg mb-10 leading-relaxed">
+          <p className="text-muted-foreground text-lg mb-10 leading-relaxed max-w-md mx-auto">
             Every objection your simulated users raise is one less surprise on
-            launch day.
+            launch day. Free to start. No credit card required.
           </p>
-          <Button
-            size="lg"
-            onClick={() => navigate("/studio")}
-            className="w-full sm:w-auto rounded-full px-10 py-6 text-base font-semibold glow-primary bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            Run Your First Simulation — Free
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button
+              size="lg"
+              onClick={() => navigate("/studio")}
+              className="rounded-full px-10 py-6 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Run Your First Simulation — Free
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => navigate("/results")}
+              className="rounded-full px-10 py-6 text-base font-semibold border-border/60 text-foreground hover:bg-muted/20 transition-colors"
+            >
+              View Example →
+            </Button>
+          </div>
         </motion.div>
       </div>
     </section>

@@ -6,18 +6,18 @@ const Footer = () => {
   };
 
   return (
-    <footer className="border-t border-border/50 py-12">
+    <footer className="border-t border-border/30 py-10">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <span className="text-lg">🐟</span>
-            <span className="font-bold text-foreground">LaunchSim</span>
-            <span className="text-muted-foreground text-sm ml-2 hidden sm:inline">
-              Simulate your launch before you ship
+            <span className="font-semibold text-foreground">LaunchSim</span>
+            <span className="text-muted-foreground text-xs ml-2 hidden sm:inline">
+              by MiroFish
             </span>
           </div>
 
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+          <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <button
               onClick={() => scrollToSection("how-it-works")}
               className="hover:text-foreground transition-colors"
@@ -35,12 +35,11 @@ const Footer = () => {
             >
               GitHub
             </a>
-            <span className="hidden sm:inline">Built at Amsterdam Hackathon 2025</span>
           </div>
         </div>
 
-        <div className="text-center mt-8 text-xs text-muted-foreground font-mono">
-          Built with 🐟 MiroFish swarm intelligence + ❤️ Lovable
+        <div className="text-center mt-8 text-[10px] text-muted-foreground/50 font-mono">
+          Built with 🐟 swarm intelligence
         </div>
       </div>
     </footer>
