@@ -87,11 +87,11 @@ const Navbar = () => {
             {user ? (
               <>
                 <Button
-                  onClick={() => navigate("/studio")}
+                  onClick={() => navigate("/dashboard")}
                   size="sm"
                   className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm px-5 font-semibold btn-shimmer touch-target"
                 >
-                  Go to Studio
+                  Dashboard
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -193,10 +193,10 @@ const Navbar = () => {
                   {user ? (
                     <div className="space-y-2">
                       <Button
-                        onClick={() => { navigate("/studio"); setMenuOpen(false); }}
+                        onClick={() => { navigate("/dashboard"); setMenuOpen(false); }}
                         className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold btn-shimmer touch-target"
                       >
-                        Go to Studio
+                        Dashboard
                       </Button>
                       <Button
                         variant="ghost"
