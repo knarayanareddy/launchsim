@@ -6,7 +6,7 @@ interface CompletionOverlayProps {
   score?: number;
 }
 
-const CompletionOverlay = ({ onViewReport }: CompletionOverlayProps) => {
+const CompletionOverlay = ({ onViewReport, score = 71 }: CompletionOverlayProps) => {
   return (
     <motion.div
       initial={{ y: "100%" }}
