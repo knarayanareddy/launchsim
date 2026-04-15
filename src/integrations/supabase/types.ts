@@ -66,7 +66,10 @@ export type Database = {
           id: string
           onboarding_completed: boolean
           plan_tier: string
+          referral_code: string
+          referred_by: string | null
           simulations_run: number
+          total_referrals: number
           updated_at: string
           user_type: string | null
         }
@@ -80,7 +83,10 @@ export type Database = {
           id: string
           onboarding_completed?: boolean
           plan_tier?: string
+          referral_code?: string
+          referred_by?: string | null
           simulations_run?: number
+          total_referrals?: number
           updated_at?: string
           user_type?: string | null
         }
@@ -94,9 +100,36 @@ export type Database = {
           id?: string
           onboarding_completed?: boolean
           plan_tier?: string
+          referral_code?: string
+          referred_by?: string | null
           simulations_run?: number
+          total_referrals?: number
           updated_at?: string
           user_type?: string | null
+        }
+        Relationships: []
+      }
+      referral_events: {
+        Row: {
+          created_at: string
+          credit_awarded: boolean
+          id: string
+          referred_id: string
+          referrer_id: string
+        }
+        Insert: {
+          created_at?: string
+          credit_awarded?: boolean
+          id?: string
+          referred_id: string
+          referrer_id: string
+        }
+        Update: {
+          created_at?: string
+          credit_awarded?: boolean
+          id?: string
+          referred_id?: string
+          referrer_id?: string
         }
         Relationships: []
       }
