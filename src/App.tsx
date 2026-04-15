@@ -14,6 +14,7 @@ import ResetPassword from "./pages/ResetPassword.tsx";
 import Studio from "./pages/Studio.tsx";
 import Simulation from "./pages/Simulation.tsx";
 import Results from "./pages/Results.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
 import Settings from "./pages/Settings.tsx";
 import Wiki from "./pages/Wiki.tsx";
 import WikiReport from "./pages/WikiReport.tsx";
@@ -56,6 +57,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
