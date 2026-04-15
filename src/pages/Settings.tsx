@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -111,6 +112,7 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Settings" path="/settings" noIndex />
       <Navbar />
       <div className="container mx-auto px-6 pt-24 pb-16 max-w-2xl">
         <h1 className="text-3xl font-bold mb-8">Settings</h1>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -108,6 +109,12 @@ const Results = () => {
 
   return (
     <div className="min-h-screen pb-20">
+      <SEO
+        title={`Launch Readiness Report — Score: ${aiResult?.overall_score ?? "?"}/100`}
+        description={`This LaunchSim report shows ${aiResult?.overall_score ?? "?"}/100 launch readiness. See the full analysis with objections, strengths, and refined pitch.`}
+        path="/results"
+        noIndex
+      />
       {/* Demo data banner */}
       {aiResult?.usingMockData && (
         <div className="bg-warning/10 border-b border-warning/30 px-4 py-2 text-center">

@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Trash2, Eye, RefreshCw, Download, Plus, ArrowRight, TrendingUp } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import SEO from "@/components/SEO";
 
 interface SimRow {
   id: string;
@@ -94,6 +95,7 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
+      <SEO title="Dashboard" path="/dashboard" noIndex />
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Resume onboarding banner */}
         {profile && !profile.onboarding_completed && (

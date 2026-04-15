@@ -3,6 +3,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
+import SEO from "@/components/SEO";
 import ProductInput from "@/components/studio/ProductInput";
 import SimulationConfig from "@/components/studio/SimulationConfig";
 import { Button } from "@/components/ui/button";
@@ -136,6 +137,7 @@ const Studio = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO title="Run a Simulation" description="Configure your product simulation — choose your crowd size, audience mix, and simulation depth." path="/studio" noIndex />
       <Navbar />
       <div className="container mx-auto px-6 pt-24 pb-16">
         {/* Breadcrumb */}
