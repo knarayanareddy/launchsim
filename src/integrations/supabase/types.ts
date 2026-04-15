@@ -57,61 +57,157 @@ export type Database = {
       }
       custom_personas: {
         Row: {
+          age_range: string | null
           archetype: string
+          backstory: string | null
+          burn_story: string | null
           cares_about: string[]
+          communication_style: string | null
           company_size: string | null
           company_type: string | null
           created_at: string
+          current_mission: string | null
+          domain_expertise_level: number | null
+          domain_expertise_tags: string[] | null
+          early_adopter_score: number | null
           emoji: string
+          enterprise_mindset: number | null
+          gender_presentation: string | null
+          has_been_burned: boolean | null
+          has_built_product: boolean | null
+          has_invested: boolean | null
           id: string
           industry: string | null
+          influence_level: number | null
+          is_public: boolean | null
+          job_title: string | null
+          last_initial: string | null
           name: string
+          pain_points: string | null
           personality_type: string
+          pitches_evaluated: string | null
+          posting_behavior: string | null
           price_sensitivity: number
+          products_hated: string[] | null
+          products_loved: string[] | null
           rejection_triggers: string | null
+          risk_tolerance: number | null
+          secondary_traits: string[] | null
           seniority: string | null
           signature_phrase: string | null
+          signature_phrases: string[] | null
           skepticism_level: number
           tech_savviness: number
+          times_used: number | null
+          tools_used: string[] | null
+          turns_them_off: string | null
+          updated_at: string | null
           user_id: string
+          vocabulary_level: string | null
+          wins_them_over: string | null
+          years_experience: number | null
         }
         Insert: {
+          age_range?: string | null
           archetype: string
+          backstory?: string | null
+          burn_story?: string | null
           cares_about?: string[]
+          communication_style?: string | null
           company_size?: string | null
           company_type?: string | null
           created_at?: string
+          current_mission?: string | null
+          domain_expertise_level?: number | null
+          domain_expertise_tags?: string[] | null
+          early_adopter_score?: number | null
           emoji?: string
+          enterprise_mindset?: number | null
+          gender_presentation?: string | null
+          has_been_burned?: boolean | null
+          has_built_product?: boolean | null
+          has_invested?: boolean | null
           id?: string
           industry?: string | null
+          influence_level?: number | null
+          is_public?: boolean | null
+          job_title?: string | null
+          last_initial?: string | null
           name: string
+          pain_points?: string | null
           personality_type: string
+          pitches_evaluated?: string | null
+          posting_behavior?: string | null
           price_sensitivity?: number
+          products_hated?: string[] | null
+          products_loved?: string[] | null
           rejection_triggers?: string | null
+          risk_tolerance?: number | null
+          secondary_traits?: string[] | null
           seniority?: string | null
           signature_phrase?: string | null
+          signature_phrases?: string[] | null
           skepticism_level?: number
           tech_savviness?: number
+          times_used?: number | null
+          tools_used?: string[] | null
+          turns_them_off?: string | null
+          updated_at?: string | null
           user_id: string
+          vocabulary_level?: string | null
+          wins_them_over?: string | null
+          years_experience?: number | null
         }
         Update: {
+          age_range?: string | null
           archetype?: string
+          backstory?: string | null
+          burn_story?: string | null
           cares_about?: string[]
+          communication_style?: string | null
           company_size?: string | null
           company_type?: string | null
           created_at?: string
+          current_mission?: string | null
+          domain_expertise_level?: number | null
+          domain_expertise_tags?: string[] | null
+          early_adopter_score?: number | null
           emoji?: string
+          enterprise_mindset?: number | null
+          gender_presentation?: string | null
+          has_been_burned?: boolean | null
+          has_built_product?: boolean | null
+          has_invested?: boolean | null
           id?: string
           industry?: string | null
+          influence_level?: number | null
+          is_public?: boolean | null
+          job_title?: string | null
+          last_initial?: string | null
           name?: string
+          pain_points?: string | null
           personality_type?: string
+          pitches_evaluated?: string | null
+          posting_behavior?: string | null
           price_sensitivity?: number
+          products_hated?: string[] | null
+          products_loved?: string[] | null
           rejection_triggers?: string | null
+          risk_tolerance?: number | null
+          secondary_traits?: string[] | null
           seniority?: string | null
           signature_phrase?: string | null
+          signature_phrases?: string[] | null
           skepticism_level?: number
           tech_savviness?: number
+          times_used?: number | null
+          tools_used?: string[] | null
+          turns_them_off?: string | null
+          updated_at?: string | null
           user_id?: string
+          vocabulary_level?: string | null
+          wins_them_over?: string | null
+          years_experience?: number | null
         }
         Relationships: []
       }
