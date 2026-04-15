@@ -34,6 +34,7 @@ const OverviewTab = ({ data }: OverviewTabProps) => {
   const navigate = useNavigate();
 
   const score = data?.overall_score ?? 71;
+  const scoreRationale = data?.score_rationale;
   const sentimentData = data?.sentiment_breakdown ?? SENTIMENT_BY_AUDIENCE;
   const objections = data?.top_objections ?? TOP_OBJECTIONS;
   const strengths = data?.top_strengths ?? TOP_STRENGTHS;
@@ -83,6 +84,9 @@ const OverviewTab = ({ data }: OverviewTabProps) => {
             </div>
           </div>
           <span className="text-[10px] text-muted-foreground mt-1">out of 100</span>
+          {scoreRationale && (
+            <p className="text-[10px] text-muted-foreground mt-2 text-center leading-relaxed max-w-[200px]">{scoreRationale}</p>
+          )}
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="glass-card rounded-xl p-5 flex flex-col items-center justify-center !transform-none" style={{ boxShadow: "0 0 30px rgba(46,213,115,0.06)" }}>

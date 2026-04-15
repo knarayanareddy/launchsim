@@ -36,6 +36,8 @@ const Results = () => {
     question?: string;
     settings?: { agentCount?: number; audiences?: string[]; platform?: string; depth?: number };
     aiResult?: SimulationResult;
+    savedSimulationId?: string;
+    savedShareToken?: string;
   } | null;
 
   const aiResult = state?.aiResult;
@@ -47,10 +49,16 @@ const Results = () => {
   const [notionOpen, setNotionOpen] = useState(false);
   const savedRef = useRef(false);
 
-  // Auto-save on mount
+  // Auto-save on mount (skip if already saved by edge function)
   useEffect(() => {
     if (savedRef.current) return;
     savedRef.current = true;
+
+    // If the edge function already saved, use that
+    if (state?.savedSimulationId) {
+      setShareToken(state.savedShareToken || null);
+      return;
+    }
 
     const depthLabels = ["quick", "standard", "deep"];
 
