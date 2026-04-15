@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { FileDown, Lock, Loader2, Send } from "lucide-react";
+import { FileDown, Lock, Loader2, Send, GitCompareArrows } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import OverviewTab from "@/components/results/OverviewTab";
 import ObjectionsTab from "@/components/results/ObjectionsTab";
@@ -154,6 +154,15 @@ const Results = () => {
               </Button>
               <Button size="sm" onClick={handleShare} className="text-xs bg-primary text-primary-foreground hover:bg-primary/90">
                 Share
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/compare")}
+                className="text-xs border-border text-muted-foreground hover:text-foreground gap-1.5"
+              >
+                <GitCompareArrows className="w-3.5 h-3.5" />
+                Compare
               </Button>
             </div>
           </div>

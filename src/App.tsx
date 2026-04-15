@@ -20,6 +20,7 @@ import Wiki from "./pages/Wiki.tsx";
 import WikiReport from "./pages/WikiReport.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import Tracker from "./pages/Tracker.tsx";
+import Compare from "./pages/Compare.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/tracker" element={<ProtectedRoute><Tracker /></ProtectedRoute>} />
+              <Route path="/compare" element={<ProtectedRoute><Compare /></ProtectedRoute>} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
