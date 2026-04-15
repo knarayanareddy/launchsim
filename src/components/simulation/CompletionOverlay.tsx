@@ -27,7 +27,7 @@ const CompletionOverlay = ({ onViewReport, score = 71 }: CompletionOverlayProps)
             </p>
             <div className="flex items-center justify-center gap-2 mb-6">
               <span className="text-muted-foreground text-sm">Launch Readiness Score:</span>
-              <span className="text-3xl font-black text-primary font-mono">71</span>
+              <span className="text-3xl font-black text-primary font-mono">{score}</span>
               <span className="text-muted-foreground text-sm">/ 100</span>
             </div>
             <Button
