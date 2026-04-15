@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .select("*")
       .eq("id", userId)
       .single();
-    setProfile(data);
+    setProfile(data ? { ...data, email_prefs: data.email_prefs as Profile["email_prefs"] } : null);
   };
 
   const refreshProfile = async () => {
