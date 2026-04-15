@@ -69,7 +69,7 @@ const Signup = () => {
     }
 
     toast.success("Check your email to confirm your account!");
-    navigate("/login");
+    navigate("/login", { state: { onboarding: true } });
   };
 
   const handleGoogle = async () => {
@@ -81,7 +81,7 @@ const Signup = () => {
       return;
     }
     if (result.redirected) return;
-    navigate("/studio");
+    navigate("/onboarding");
   };
 
   return (
