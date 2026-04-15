@@ -1,0 +1,171 @@
+export interface WikiSimulation {
+  id: string;
+  shareToken: string;
+  title: string;
+  description: string;
+  score: number;
+  createdAt: string;
+  audienceMix: string[];
+  topObjection: string;
+  topStrength: string;
+  agentCount: number;
+  objectionCount: number;
+  crowdSize: number;
+  platform: string;
+  depth: string;
+  simulationQuestion: string | null;
+  sentimentBreakdown: any;
+  topObjections: any;
+  topStrengths: any;
+  sharpenedPitch: string;
+  keyQuote: string;
+  keyQuoteAgent: string;
+  agentPosts: any;
+}
+
+export const MOCK_WIKI_SIMULATIONS: WikiSimulation[] = [
+  {
+    id: "1",
+    shareToken: "ls71abc1",
+    title: "LaunchSim",
+    description: "LaunchSim helps founders simulate how 1,000 real user types would react to their product before launch. Paste your pitch and get a sentiment map, top objections, and a refined pitch in minutes.",
+    score: 71,
+    createdAt: "2025-06-12T10:00:00Z",
+    audienceMix: ["founders", "pm"],
+    topObjection: "ICP is unclear between solo and enterprise",
+    topStrength: "'Before you ship' framing is genius",
+    agentCount: 200,
+    objectionCount: 12,
+    crowdSize: 200,
+    platform: "both",
+    depth: "standard",
+    simulationQuestion: null,
+    sentimentBreakdown: null,
+    topObjections: null,
+    topStrengths: null,
+    sharpenedPitch: "",
+    keyQuote: "Positioning is clean. The 'before you ship' framing is smart — it's selling insurance not software.",
+    keyQuoteAgent: "Casey P. — Indie Founder — 🟢 Advocate",
+    agentPosts: null,
+  },
+  {
+    id: "2",
+    shareToken: "df84abc2",
+    title: "DevFlow CI/CD Dashboard",
+    description: "DevFlow is a developer-first CI/CD dashboard that unifies builds, tests, and deployments into a single real-time view. Built for teams running GitHub Actions, CircleCI, and Jenkins.",
+    score: 84,
+    createdAt: "2025-06-10T14:30:00Z",
+    audienceMix: ["developers", "enterprise"],
+    topObjection: "Missing on-premise deployment option",
+    topStrength: "Obsidian-style local-first approach resonates",
+    agentCount: 500,
+    objectionCount: 8,
+    crowdSize: 500,
+    platform: "reddit",
+    depth: "deep",
+    simulationQuestion: "Will enterprise teams adopt this over Datadog?",
+    sentimentBreakdown: null,
+    topObjections: null,
+    topStrengths: null,
+    sharpenedPitch: "",
+    keyQuote: "Finally a CI dashboard that doesn't feel like it was built in 2015.",
+    keyQuoteAgent: "Priya S. — Developer — 🟢 Advocate",
+    agentPosts: null,
+  },
+  {
+    id: "3",
+    shareToken: "ra58abc3",
+    title: "ResumeAI",
+    description: "ResumeAI uses GPT-4 to analyze your resume against job descriptions and suggests targeted improvements. Built for job seekers who want to stand out in a saturated market.",
+    score: 58,
+    createdAt: "2025-06-08T09:15:00Z",
+    audienceMix: ["consumers", "founders"],
+    topObjection: "Crowded market with no clear differentiator",
+    topStrength: "Job-seeker anxiety framing is relatable",
+    agentCount: 200,
+    objectionCount: 15,
+    crowdSize: 200,
+    platform: "twitter",
+    depth: "standard",
+    simulationQuestion: "Is there room for another AI resume tool?",
+    sentimentBreakdown: null,
+    topObjections: null,
+    topStrengths: null,
+    sharpenedPitch: "",
+    keyQuote: "The pain is real but the solution isn't differentiated enough.",
+    keyQuoteAgent: "Jordan K. — Skeptic — 🔴 Skeptic",
+    agentPosts: null,
+  },
+  {
+    id: "4",
+    shareToken: "bs79abc4",
+    title: "BoardSync",
+    description: "BoardSync automates board meeting prep, minutes, and action tracking for startups and SMBs. Integrates with Notion, Google Docs, and Slack for seamless governance workflows.",
+    score: 79,
+    createdAt: "2025-06-06T16:45:00Z",
+    audienceMix: ["enterprise", "vcs"],
+    topObjection: "Pricing too aggressive for SMB",
+    topStrength: "Auto-minutes feature is killer",
+    agentCount: 200,
+    objectionCount: 9,
+    crowdSize: 200,
+    platform: "both",
+    depth: "standard",
+    simulationQuestion: "Would VCs recommend this to portfolio companies?",
+    sentimentBreakdown: null,
+    topObjections: null,
+    topStrengths: null,
+    sharpenedPitch: "",
+    keyQuote: "Every founder I know dreads board prep. This solves a real pain point.",
+    keyQuoteAgent: "Alex R. — VC Partner — 🟡 Pragmatist",
+    agentPosts: null,
+  },
+  {
+    id: "5",
+    shareToken: "ct62abc5",
+    title: "CarbonTrack",
+    description: "CarbonTrack helps enterprises measure, report, and reduce their carbon footprint with automated data collection from ERPs, fleet systems, and energy providers.",
+    score: 62,
+    createdAt: "2025-06-04T11:20:00Z",
+    audienceMix: ["enterprise"],
+    topObjection: "ROI story is underdeveloped",
+    topStrength: "Timing with ESG regulations is perfect",
+    agentCount: 1000,
+    objectionCount: 11,
+    crowdSize: 1000,
+    platform: "reddit",
+    depth: "deep",
+    simulationQuestion: "Will enterprises pay for sustainability tracking?",
+    sentimentBreakdown: null,
+    topObjections: null,
+    topStrengths: null,
+    sharpenedPitch: "",
+    keyQuote: "The regulatory tailwind is real but the product needs to show direct cost savings.",
+    keyQuoteAgent: "Morgan L. — Enterprise Buyer — 🟡 Pragmatist",
+    agentPosts: null,
+  },
+  {
+    id: "6",
+    shareToken: "nf45abc6",
+    title: "NoteForge",
+    description: "NoteForge is an AI-powered note-taking app with offline-first architecture. Think Notion meets Obsidian but with GPT summarization, auto-linking, and local encryption.",
+    score: 45,
+    createdAt: "2025-06-02T08:00:00Z",
+    audienceMix: ["consumers", "developers"],
+    topObjection: "Notion/Obsidian comparison kills momentum",
+    topStrength: "Offline-first is genuinely appreciated",
+    agentCount: 50,
+    objectionCount: 18,
+    crowdSize: 50,
+    platform: "twitter",
+    depth: "quick",
+    simulationQuestion: null,
+    sentimentBreakdown: null,
+    topObjections: null,
+    topStrengths: null,
+    sharpenedPitch: "",
+    keyQuote: "I like the offline angle but comparing yourself to Notion is a death sentence.",
+    keyQuoteAgent: "Avery L. — PM @ Big Tech — 🔴 Skeptic",
+    agentPosts: null,
+  },
+];
