@@ -1,11 +1,12 @@
+import { motion } from "framer-motion";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie,
 } from "recharts";
-import { SENTIMENT_BY_AUDIENCE, TOP_OBJECTIONS, TOP_STRENGTHS } from "@/data/resultsMocks";
+import { SENTIMENT_BY_AUDIENCE, TOP_OBJECTIONS, TOP_STRENGTHS, RECOMMENDED_ACTIONS } from "@/data/resultsMocks";
 import { useNavigate } from "react-router-dom";
-import { RECOMMENDED_ACTIONS } from "@/data/resultsMocks";
 import { Button } from "@/components/ui/button";
+import AnimatedCounter from "@/components/AnimatedCounter";
 
 const COLORS = { excited: "#2ED573", skeptical: "#F5A623", neutral: "#64748B", hostile: "#FF4757" };
 
@@ -34,7 +35,7 @@ const OverviewTab = () => {
       {/* KPI Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Launch Readiness Gauge */}
-        <div className="glass-card rounded-xl p-5 flex flex-col items-center justify-center" style={{ boxShadow: "0 0 30px rgba(245,166,35,0.08)" }}>
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }} className="glass-card rounded-xl p-5 flex flex-col items-center justify-center !transform-none" style={{ boxShadow: "0 0 30px rgba(245,166,35,0.08)" }}>
           <span className="text-xs text-muted-foreground mb-2">🎯 Launch Readiness</span>
           <div className="relative w-24 h-24">
             <ResponsiveContainer width="100%" height="100%">
@@ -50,6 +51,8 @@ const OverviewTab = () => {
                   endAngle={-270}
                   paddingAngle={0}
                   stroke="none"
+                  animationBegin={0}
+                  animationDuration={1200}
                 >
                   <Cell fill="#F5A623" />
                   <Cell fill="rgba(255,255,255,0.06)" />
@@ -57,30 +60,30 @@ const OverviewTab = () => {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-black font-mono text-warning">71</span>
+              <AnimatedCounter target={71} duration={1200} className="text-2xl font-black text-warning" />
             </div>
           </div>
           <span className="text-[10px] text-muted-foreground mt-1">out of 100</span>
-        </div>
+        </motion.div>
 
         {/* Excited */}
-        <div className="glass-card rounded-xl p-5 flex flex-col items-center justify-center" style={{ boxShadow: "0 0 30px rgba(46,213,115,0.06)" }}>
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="glass-card rounded-xl p-5 flex flex-col items-center justify-center !transform-none" style={{ boxShadow: "0 0 30px rgba(46,213,115,0.06)" }}>
           <span className="text-xs text-muted-foreground mb-2">💚 Excited</span>
-          <span className="text-3xl font-black font-mono text-success">34%</span>
-        </div>
+          <AnimatedCounter target={34} suffix="%" duration={800} className="text-3xl font-black text-success" />
+        </motion.div>
 
         {/* Skeptical */}
-        <div className="glass-card rounded-xl p-5 flex flex-col items-center justify-center" style={{ boxShadow: "0 0 30px rgba(245,166,35,0.06)" }}>
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }} className="glass-card rounded-xl p-5 flex flex-col items-center justify-center !transform-none" style={{ boxShadow: "0 0 30px rgba(245,166,35,0.06)" }}>
           <span className="text-xs text-muted-foreground mb-2">🟡 Skeptical</span>
-          <span className="text-3xl font-black font-mono text-warning">41%</span>
-        </div>
+          <AnimatedCounter target={41} suffix="%" duration={800} className="text-3xl font-black text-warning" />
+        </motion.div>
 
         {/* Hostile + Neutral */}
-        <div className="glass-card rounded-xl p-5 flex flex-col items-center justify-center" style={{ boxShadow: "0 0 30px rgba(255,71,87,0.06)" }}>
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }} className="glass-card rounded-xl p-5 flex flex-col items-center justify-center !transform-none" style={{ boxShadow: "0 0 30px rgba(255,71,87,0.06)" }}>
           <span className="text-xs text-muted-foreground mb-2">🔴 Hostile</span>
-          <span className="text-3xl font-black font-mono text-destructive">12%</span>
+          <AnimatedCounter target={12} suffix="%" duration={800} className="text-3xl font-black text-destructive" />
           <span className="text-xs text-muted-foreground mt-1">🩶 Neutral 13%</span>
-        </div>
+        </motion.div>
       </div>
 
       {/* Sentiment Breakdown */}
