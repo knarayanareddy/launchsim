@@ -19,12 +19,29 @@ const CATEGORY_CHIP: Record<string, string> = {
   Demand: "bg-success/15 text-success",
 };
 
-const StrengthsTab = () => {
+interface StrengthsTabProps {
+  data?: any[];
+}
+
+const StrengthsTab = ({ data }: StrengthsTabProps) => {
   const [filter, setFilter] = useState("All");
 
+  const strengths = (data || TOP_STRENGTHS).map((s: any, i: number) => ({
+    id: s.id || i + 1,
+    text: s.text,
+    agents: s.agent_count || s.agents,
+    category: s.category,
+    quote: s.quote || s.text,
+    agent: s.agent || "Agent",
+    role: s.role || s.archetype || "",
+    badge: s.badge || "advocate",
+    badgeEmoji: s.badgeEmoji || (s.badge === "skeptic" ? "🔴" : s.badge === "advocate" ? "🟢" : s.badge === "analyst" ? "🔵" : "🟡"),
+    emoji: s.emoji || "🚀",
+  }));
+
   const filtered = filter === "All"
-    ? TOP_STRENGTHS
-    : TOP_STRENGTHS.filter((s) => s.category === filter);
+    ? strengths
+    : strengths.filter((s: any) => s.category === filter);
 
   return (
     <div className="space-y-4">
@@ -44,7 +61,7 @@ const StrengthsTab = () => {
         ))}
       </div>
 
-      {filtered.map((str, i) => (
+      {filtered.map((str: any, i: number) => (
         <div key={str.id} className="glass-card rounded-xl p-5 border-l-2 border-l-success/40">
           <div className="flex gap-3">
             <span className="text-2xl font-black text-muted-foreground/20 font-mono leading-none">{i + 1}</span>

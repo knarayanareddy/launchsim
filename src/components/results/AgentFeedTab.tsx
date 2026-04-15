@@ -16,12 +16,38 @@ const BADGE_CHIP: Record<string, string> = {
   analyst: "bg-primary/15 text-primary",
 };
 
-const AgentFeedTab = () => {
+const BADGE_EMOJI: Record<string, string> = {
+  skeptic: "🔴",
+  advocate: "🟢",
+  pragmatist: "🟡",
+  analyst: "🔵",
+};
+
+interface AgentFeedTabProps {
+  data?: any[];
+}
+
+const AgentFeedTab = ({ data }: AgentFeedTabProps) => {
   const [filter, setFilter] = useState("All");
 
+  const agents = (data || AGENT_FEED_DATA).map((a: any, i: number) => ({
+    id: a.id || i + 1,
+    emoji: a.emoji || "🤖",
+    name: a.name,
+    role: a.role || a.archetype || "",
+    badge: a.badge || a.personality_type || "pragmatist",
+    badgeEmoji: a.badgeEmoji || BADGE_EMOJI[a.badge || a.personality_type] || "🟡",
+    text: a.text || a.reaction_post || "",
+    upvotes: a.upvotes || 0,
+    downvotes: a.downvotes || 0,
+    replies: a.replies || 0,
+    isReply: a.isReply || false,
+    replyTo: a.replyTo || null,
+  }));
+
   const filtered = filter === "All"
-    ? AGENT_FEED_DATA
-    : AGENT_FEED_DATA.filter((a) => a.badge === FILTER_MAP[filter]);
+    ? agents
+    : agents.filter((a: any) => a.badge === FILTER_MAP[filter]);
 
   return (
     <div className="space-y-4">
@@ -41,7 +67,7 @@ const AgentFeedTab = () => {
         ))}
       </div>
 
-      {filtered.map((post) => (
+      {filtered.map((post: any) => (
         <div
           key={post.id}
           className={`glass-card rounded-xl p-4 ${post.isReply ? "ml-8 border-l-2 border-l-primary/30" : ""}`}
@@ -60,7 +86,7 @@ const AgentFeedTab = () => {
           <p className="font-mono text-sm text-foreground/80 leading-relaxed mb-3">{post.text}</p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span>👍 {post.upvotes}</span>
-            <span>👎 {post.downvotes}</span>
+            {post.downvotes > 0 && <span>👎 {post.downvotes}</span>}
             {post.replies > 0 && <span>💬 {post.replies} replies</span>}
           </div>
         </div>
