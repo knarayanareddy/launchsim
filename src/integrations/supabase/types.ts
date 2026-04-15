@@ -14,7 +14,107 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agents: {
+        Row: {
+          archetype: string
+          emoji: string | null
+          id: string
+          name: string
+          personality_type: string
+          reaction_post: string | null
+          simulation_id: string
+          upvotes: number | null
+        }
+        Insert: {
+          archetype: string
+          emoji?: string | null
+          id?: string
+          name: string
+          personality_type: string
+          reaction_post?: string | null
+          simulation_id: string
+          upvotes?: number | null
+        }
+        Update: {
+          archetype?: string
+          emoji?: string | null
+          id?: string
+          name?: string
+          personality_type?: string
+          reaction_post?: string | null
+          simulation_id?: string
+          upvotes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agents_simulation_id_fkey"
+            columns: ["simulation_id"]
+            isOneToOne: false
+            referencedRelation: "simulations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulations: {
+        Row: {
+          agent_posts: Json | null
+          audience_mix: string[]
+          created_at: string
+          crowd_size: number
+          depth: string
+          id: string
+          key_quote: string | null
+          key_quote_agent: string | null
+          overall_score: number
+          platform: string
+          product_description: string
+          sentiment_breakdown: Json | null
+          share_token: string | null
+          sharpened_pitch: string | null
+          simulation_question: string | null
+          top_objections: Json | null
+          top_strengths: Json | null
+        }
+        Insert: {
+          agent_posts?: Json | null
+          audience_mix?: string[]
+          created_at?: string
+          crowd_size?: number
+          depth?: string
+          id?: string
+          key_quote?: string | null
+          key_quote_agent?: string | null
+          overall_score?: number
+          platform?: string
+          product_description: string
+          sentiment_breakdown?: Json | null
+          share_token?: string | null
+          sharpened_pitch?: string | null
+          simulation_question?: string | null
+          top_objections?: Json | null
+          top_strengths?: Json | null
+        }
+        Update: {
+          agent_posts?: Json | null
+          audience_mix?: string[]
+          created_at?: string
+          crowd_size?: number
+          depth?: string
+          id?: string
+          key_quote?: string | null
+          key_quote_agent?: string | null
+          overall_score?: number
+          platform?: string
+          product_description?: string
+          sentiment_breakdown?: Json | null
+          share_token?: string | null
+          sharpened_pitch?: string | null
+          simulation_question?: string | null
+          top_objections?: Json | null
+          top_strengths?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
