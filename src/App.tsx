@@ -8,6 +8,7 @@ import Studio from "./pages/Studio.tsx";
 import Simulation from "./pages/Simulation.tsx";
 import Results from "./pages/Results.tsx";
 import Wiki from "./pages/Wiki.tsx";
+import WikiReport from "./pages/WikiReport.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/simulation" element={<Simulation />} />
           <Route path="/results" element={<Results />} />
           <Route path="/wiki" element={<Wiki />} />
+          <Route path="/wiki/:token" element={<WikiReport />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
