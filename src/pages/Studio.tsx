@@ -176,6 +176,75 @@ const Studio = () => {
               clearError={() => setErrors((e) => ({ ...e, description: undefined }))}
               charGuidance={charGuidance}
             />
+
+            {/* Iteration toggle */}
+            <div className="mt-6 bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
+              <p className="text-sm font-medium text-foreground">Is this a new idea or an iteration?</p>
+              <RadioGroup
+                value={iterationType}
+                onValueChange={(v) => setIterationType(v as "new" | "iteration")}
+                className="flex gap-6"
+              >
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="new" id="type-new" />
+                  <Label htmlFor="type-new" className="text-sm text-foreground cursor-pointer">New product</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="iteration" id="type-iter" />
+                  <Label htmlFor="type-iter" className="text-sm text-foreground cursor-pointer">Iteration of existing idea</Label>
+                </div>
+              </RadioGroup>
+
+              {iterationType === "iteration" && (
+                <div className="space-y-3 animate-fade-in">
+                  <Label className="text-xs text-muted-foreground">Which product?</Label>
+                  {groups.length > 0 ? (
+                    <div className="space-y-2">
+                      {groups.map((g) => (
+                        <button
+                          key={g.id}
+                          onClick={() => setSelectedGroupId(g.id)}
+                          className={`w-full text-left rounded-lg p-3 border transition-all text-sm ${
+                            selectedGroupId === g.id
+                              ? "border-primary bg-primary/10"
+                              : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                          }`}
+                        >
+                          <span className="font-medium text-foreground">{g.product_name}</span>
+                          <span className="text-xs text-muted-foreground ml-2">
+                            Score: {g.latest_score} · {g.simulation_ids.length} runs
+                          </span>
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => setSelectedGroupId(null)}
+                        className={`w-full text-left rounded-lg p-3 border transition-all text-sm ${
+                          selectedGroupId === null
+                            ? "border-primary bg-primary/10"
+                            : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                        }`}
+                      >
+                        <span className="text-primary text-sm">+ Create new tracked product</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No tracked products yet. This will create your first one.</p>
+                  )}
+
+                  {(selectedGroupId === null || groups.length === 0) && (
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">Product name</Label>
+                      <input
+                        value={newGroupName}
+                        onChange={(e) => setNewGroupName(e.target.value)}
+                        placeholder="e.g. LaunchSim, My Fitness App"
+                        className="w-full h-9 px-3 rounded-lg bg-white/5 border border-white/10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </motion.div>
 
           <motion.div
