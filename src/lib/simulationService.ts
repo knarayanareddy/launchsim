@@ -21,9 +21,13 @@ export interface SaveSimulationParams {
 export async function saveSimulation(params: SaveSimulationParams) {
   const ai = params.aiResult;
 
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser();
+
   const { data, error } = await supabase
     .from("simulations")
     .insert({
+      user_id: user?.id || null,
       product_description: params.description,
       simulation_question: params.question || null,
       crowd_size: params.crowdSize || 200,
@@ -57,6 +61,17 @@ export async function saveSimulation(params: SaveSimulationParams) {
   }));
 
   await supabase.from("agents").insert(agents);
+
+  // Increment simulations_run on profile
+  if (user) {
+    const { data: profile } = await supabase.from("profiles").select("simulations_run, credits_remaining").eq("id", user.id).single();
+    if (profile) {
+      await supabase.from("profiles").update({
+        simulations_run: (profile.simulations_run || 0) + 1,
+        credits_remaining: Math.max(0, (profile.credits_remaining || 0) - 1),
+      }).eq("id", user.id);
+    }
+  }
 
   return data;
 }
