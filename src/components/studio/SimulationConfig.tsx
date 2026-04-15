@@ -1,3 +1,7 @@
+import { useState, useEffect } from "react";
+import { Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import type { SimulationSettings } from "@/pages/Studio";
 
 interface SimulationConfigProps {
@@ -34,12 +38,32 @@ const PLATFORMS = [
 const DEPTH_LABELS = ["Quick (2 rounds)", "Standard (5 rounds)", "Deep (10 rounds)"];
 const DEPTH_TIMES = ["~20 seconds", "~45 seconds", "~90 seconds"];
 
+interface CustomPersonaChip {
+  id: string;
+  name: string;
+  emoji: string;
+}
+
 const SimulationConfig = ({
   settings,
   setSettings,
   audienceError,
   clearAudienceError,
 }: SimulationConfigProps) => {
+  const { user, profile } = useAuth();
+  const [customPersonas, setCustomPersonas] = useState<CustomPersonaChip[]>([]);
+  const [showCustom, setShowCustom] = useState(false);
+  const isUnlimited = profile?.plan_tier === "unlimited" || profile?.plan_tier === "enterprise";
+
+  useEffect(() => {
+    if (!user || !isUnlimited) return;
+    supabase
+      .from("custom_personas")
+      .select("id, name, emoji")
+      .eq("user_id", user.id)
+      .then(({ data }) => setCustomPersonas((data as CustomPersonaChip[]) || []));
+  }, [user, isUnlimited]);
+
   const toggleAudience = (id: string) => {
     setSettings((prev) => {
       const next = prev.audiences.includes(id)
@@ -104,6 +128,37 @@ const SimulationConfig = ({
             );
           })}
         </div>
+        {/* Custom personas */}
+        {isUnlimited && customPersonas.length > 0 && (
+          <>
+            <button
+              onClick={() => setShowCustom(!showCustom)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border border-dashed border-primary/40 text-primary hover:bg-primary/10 transition-all"
+            >
+              <Plus className="w-3 h-3" /> {showCustom ? "Hide" : "Add"} Custom Personas
+            </button>
+            {showCustom && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {customPersonas.map((cp) => {
+                  const selected = settings.audiences.includes(`custom:${cp.id}`);
+                  return (
+                    <button
+                      key={cp.id}
+                      onClick={() => toggleAudience(`custom:${cp.id}`)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                        selected
+                          ? "bg-accent/15 border-accent/40 text-foreground scale-105"
+                          : "bg-transparent border-border text-muted-foreground hover:border-muted-foreground/40"
+                      }`}
+                    >
+                      {cp.emoji} {cp.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
         {audienceError && (
           <p className="text-destructive text-xs mt-2 font-mono">{audienceError}</p>
         )}
