@@ -41,7 +41,7 @@ const Login = () => {
       return;
     }
     if (result.redirected) return;
-    navigate("/studio");
+    navigate("/onboarding");
   };
 
   const handleForgotPassword = async () => {
