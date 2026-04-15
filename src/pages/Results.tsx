@@ -9,6 +9,7 @@ import StrengthsTab from "@/components/results/StrengthsTab";
 import AgentFeedTab from "@/components/results/AgentFeedTab";
 import RefinedPitchTab from "@/components/results/RefinedPitchTab";
 import { saveSimulation } from "@/lib/simulationService";
+import type { SimulationResult } from "@/hooks/useSimulation";
 
 const TABS = ["Overview", "Objections", "Strengths", "Agent Feed", "Refined Pitch"];
 
@@ -20,7 +21,11 @@ const Results = () => {
     description?: string;
     question?: string;
     settings?: { agentCount?: number; audiences?: string[]; platform?: string; depth?: number };
+    aiResult?: SimulationResult;
   } | null;
+
+  const aiResult = state?.aiResult;
+
   const [activeTab, setActiveTab] = useState(0);
   const [shareToken, setShareToken] = useState<string | null>(null);
   const savedRef = useRef(false);
@@ -40,13 +45,11 @@ const Results = () => {
       audienceMix: state?.settings?.audiences,
       platform: state?.settings?.platform,
       depth: depthLabels[state?.settings?.depth ?? 1],
+      aiResult: aiResult || undefined,
     })
       .then((result) => {
         setShareToken(result.share_token);
-        toast({
-          description: "✅ Saved to your wiki",
-          duration: 3000,
-        });
+        toast({ description: "✅ Saved to your wiki", duration: 3000 });
       })
       .catch((err) => {
         console.error("Failed to save simulation:", err);
@@ -57,42 +60,40 @@ const Results = () => {
     const url = shareToken
       ? `${window.location.origin}/wiki/${shareToken}`
       : window.location.href;
-
     await navigator.clipboard.writeText(url);
-    toast({
-      description: "Link copied! Anyone with this link can view your report",
-      duration: 3000,
-    });
+    toast({ description: "Link copied! Anyone with this link can view your report", duration: 3000 });
   };
 
   return (
     <div className="min-h-screen pb-20">
+      {/* Demo data banner */}
+      {aiResult?.usingMockData && (
+        <div className="bg-warning/10 border-b border-warning/30 px-4 py-2 text-center">
+          <span className="text-xs text-warning font-mono">⚠️ Using demo data — AI generation failed or is unavailable</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="border-b border-border/50 bg-background/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => navigate("/studio")}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <button onClick={() => navigate("/studio")} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               ← Run Another Simulation
             </button>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="text-xs border-border text-muted-foreground hover:text-foreground">
                 Export PDF
               </Button>
-              <Button
-                size="sm"
-                onClick={handleShare}
-                className="text-xs bg-primary text-primary-foreground hover:bg-primary/90"
-              >
+              <Button size="sm" onClick={handleShare} className="text-xs bg-primary text-primary-foreground hover:bg-primary/90">
                 Share
               </Button>
             </div>
           </div>
           <div className="mb-4">
             <h1 className="text-2xl font-bold">Simulation Report</h1>
-            <p className="text-sm text-muted-foreground font-mono mt-1">200 agents · 5 rounds · 14 minutes ago</p>
+            <p className="text-sm text-muted-foreground font-mono mt-1">
+              {aiResult?.agents?.length || 200} agents · 5 rounds · just now
+            </p>
           </div>
 
           {/* Tabs */}
@@ -127,11 +128,17 @@ const Results = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
         >
-          {activeTab === 0 && <OverviewTab />}
-          {activeTab === 1 && <ObjectionsTab />}
-          {activeTab === 2 && <StrengthsTab />}
-          {activeTab === 3 && <AgentFeedTab />}
-          {activeTab === 4 && <RefinedPitchTab originalPitch={state?.description} />}
+          {activeTab === 0 && <OverviewTab data={aiResult} />}
+          {activeTab === 1 && <ObjectionsTab data={aiResult?.top_objections} />}
+          {activeTab === 2 && <StrengthsTab data={aiResult?.top_strengths} />}
+          {activeTab === 3 && <AgentFeedTab data={aiResult?.agents} />}
+          {activeTab === 4 && (
+            <RefinedPitchTab
+              originalPitch={state?.description}
+              refinedPitch={aiResult?.sharpened_pitch}
+              changesMade={aiResult?.pitch_changes_made}
+            />
+          )}
         </motion.div>
       </div>
     </div>
