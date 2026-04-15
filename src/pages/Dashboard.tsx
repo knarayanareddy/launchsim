@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Trash2, Eye, RefreshCw, Download, Plus, ArrowRight, TrendingUp } from "lucide-react";
+import { Loader2, Trash2, Eye, RefreshCw, Download, Plus, ArrowRight, TrendingUp, X, Gift } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import SEO from "@/components/SEO";
@@ -360,6 +360,47 @@ function getTopCategory(sims: SimRow[]): string {
   });
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
   return sorted[0]?.[0] || "N/A";
+}
+
+function ReferralBanner() {
+  const [dismissed, setDismissed] = useState(() => {
+    const ts = localStorage.getItem("launchsim_referral_banner_dismissed");
+    if (!ts) return false;
+    return Date.now() - Number(ts) < 7 * 24 * 60 * 60 * 1000;
+  });
+  const navigate = useNavigate();
+  const { profile } = useAuth();
+
+  if (dismissed || !profile || (profile.total_referrals || 0) > 0) return null;
+
+  const handleDismiss = () => {
+    localStorage.setItem("launchsim_referral_banner_dismissed", String(Date.now()));
+    setDismissed(true);
+  };
+
+  return (
+    <div className="bg-accent/10 border border-accent/30 rounded-xl p-4 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <Gift className="w-5 h-5 text-accent shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-foreground">🎁 Give 1 free sim, get 3 free sims</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Share your referral link and earn credits</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        <Button
+          size="sm"
+          onClick={() => navigate("/settings")}
+          className="bg-accent text-accent-foreground hover:bg-accent/90 text-xs"
+        >
+          Share link →
+        </Button>
+        <button onClick={handleDismiss} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default Dashboard;
