@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import StatsStrip from "@/components/StatsStrip";
@@ -9,6 +10,7 @@ import Footer from "@/components/Footer";
 const Index = () => {
   return (
     <div className="min-h-screen scroll-smooth bg-animated-gradient">
+      <SEO path="/" />
       <Navbar />
       <HeroSection />
       <StatsStrip />

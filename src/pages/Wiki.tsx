@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
+import SEO from "@/components/SEO";
 import { MOCK_WIKI_SIMULATIONS } from "@/data/wikiMocks";
 
 const SCORE_FILTERS = [
@@ -99,6 +100,11 @@ const Wiki = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Simulation Wiki — Market Intelligence Archive"
+        description="Browse past LaunchSim simulations to see how the market reacted to real product pitches."
+        path="/wiki"
+      />
       <Navbar />
       <div className="container mx-auto px-6 pt-24 pb-16">
         {/* Header */}
