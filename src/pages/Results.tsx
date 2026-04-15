@@ -17,7 +17,8 @@ import type { SimulationResult } from "@/hooks/useSimulation";
 const TABS = ["Overview", "Objections", "Strengths", "Agent Feed", "Refined Pitch"];
 
 // Placeholder: replace with real user plan logic
-const USER_PLAN: "free" | "pro" | "unlimited" = "unlimited";
+const getUserPlan = (): "free" | "pro" | "unlimited" => "unlimited";
+const USER_PLAN = getUserPlan();
 
 const Results = () => {
   const navigate = useNavigate();
