@@ -1,20 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import OverviewTab from "@/components/results/OverviewTab";
 import ObjectionsTab from "@/components/results/ObjectionsTab";
 import StrengthsTab from "@/components/results/StrengthsTab";
 import AgentFeedTab from "@/components/results/AgentFeedTab";
 import RefinedPitchTab from "@/components/results/RefinedPitchTab";
+import { saveSimulation } from "@/lib/simulationService";
 
 const TABS = ["Overview", "Objections", "Strengths", "Agent Feed", "Refined Pitch"];
 
 const Results = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { description?: string } | null;
+  const { toast } = useToast();
+  const state = location.state as {
+    description?: string;
+    question?: string;
+    settings?: { agentCount?: number; audiences?: string[]; platform?: string; depth?: number };
+  } | null;
   const [activeTab, setActiveTab] = useState(0);
+  const [shareToken, setShareToken] = useState<string | null>(null);
+  const savedRef = useRef(false);
+
+  // Auto-save on mount
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+
+    const description = state?.description || "LaunchSim helps founders simulate how 1,000 real user types would react to their product before launch.";
+    const depthLabels = ["quick", "standard", "deep"];
+
+    saveSimulation({
+      description,
+      question: state?.question,
+      crowdSize: state?.settings?.agentCount,
+      audienceMix: state?.settings?.audiences,
+      platform: state?.settings?.platform,
+      depth: depthLabels[state?.settings?.depth ?? 1],
+    })
+      .then((result) => {
+        setShareToken(result.share_token);
+        toast({
+          description: "✅ Saved to your wiki",
+          duration: 3000,
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to save simulation:", err);
+      });
+  }, []);
+
+  const handleShare = async () => {
+    const url = shareToken
+      ? `${window.location.origin}/wiki/${shareToken}`
+      : window.location.href;
+
+    await navigator.clipboard.writeText(url);
+    toast({
+      description: "Link copied! Anyone with this link can view your report",
+      duration: 3000,
+    });
+  };
 
   return (
     <div className="min-h-screen pb-20">
@@ -32,7 +81,11 @@ const Results = () => {
               <Button variant="outline" size="sm" className="text-xs border-border text-muted-foreground hover:text-foreground">
                 Export PDF
               </Button>
-              <Button size="sm" className="text-xs bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button
+                size="sm"
+                onClick={handleShare}
+                className="text-xs bg-primary text-primary-foreground hover:bg-primary/90"
+              >
                 Share
               </Button>
             </div>
