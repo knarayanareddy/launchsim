@@ -5,52 +5,61 @@ const steps = [
     icon: "📝",
     title: "Paste Your Pitch",
     description:
-      "Drop in your landing page copy, one-pager, or rough idea",
+      "Drop in your landing page copy, one-pager, or rough product idea. No formatting required — just your story.",
   },
   {
     icon: "🐟",
     title: "Swarm Activates",
     description:
-      "1,000 AI agents with unique personalities, memories, and opinions react, debate, and vote",
+      "1,000 AI agents with unique personalities, memories, and biases react, debate, and vote on your product in real-time.",
   },
   {
     icon: "📊",
     title: "Get Your Report",
     description:
-      "Sentiment map, top objections, refined pitch, and launch confidence score",
+      "Sentiment map, top objections, refined pitch copy, and a launch confidence score — all in under 2 minutes.",
   },
 ];
 
 const HowItWorksSection = () => {
   return (
-    <section id="how-it-works" className="py-24 relative">
+    <section id="how-it-works" className="py-28 relative">
       <div className="container mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-6"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">
-            From idea to insight in <span className="text-primary">3 steps</span>
-          </h2>
+          <span className="text-xs text-muted-foreground tracking-widest uppercase">The Process</span>
         </motion.div>
+        <motion.h2
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-16 leading-tight"
+        >
+          From idea to insight in{" "}
+          <span className="text-primary">3 steps.</span>
+        </motion.h2>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {steps.map((step, i) => (
             <motion.div
               key={step.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
-              className="glass-card rounded-xl p-6 text-center group hover:border-primary/20 transition-colors"
+              transition={{ delay: i * 0.1 }}
+              className="rounded-xl border border-border/40 bg-card/50 p-8 group hover:border-primary/20 transition-all duration-300"
             >
-              <div className="text-4xl mb-4">{step.icon}</div>
-              <div className="text-xs font-mono text-muted-foreground mb-2 uppercase tracking-wider">
-                Step {i + 1}
+              <div className="flex items-center gap-3 mb-5">
+                <span className="text-3xl">{step.icon}</span>
+                <span className="text-xs font-mono text-muted-foreground tracking-widest uppercase">
+                  Step {i + 1}
+                </span>
               </div>
-              <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
+              <h3 className="text-xl font-semibold mb-3 text-foreground">{step.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 {step.description}
               </p>

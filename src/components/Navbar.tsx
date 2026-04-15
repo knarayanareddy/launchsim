@@ -52,32 +52,33 @@ const Navbar = () => {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-background/80 backdrop-blur-xl border-b border-border/50"
+            ? "bg-background/80 backdrop-blur-xl border-b border-border/30"
             : "bg-transparent"
         }`}
       >
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="container mx-auto px-6 h-14 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-xl">🐟</span>
-            <span className="font-bold text-lg tracking-tight text-foreground">LaunchSim</span>
+            <span className="text-lg">🐟</span>
+            <span className="font-semibold text-sm tracking-tight text-foreground">LaunchSim</span>
+            <span className="text-xs text-muted-foreground hidden sm:inline ml-1">by MiroFish</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-1">
             <button
               onClick={() => scrollToSection("how-it-works")}
-              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg touch-target"
+              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg"
             >
               How it Works
             </button>
             <button
               onClick={() => scrollToSection("personas")}
-              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg touch-target"
+              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg"
             >
               Examples
             </button>
             <Link
               to="/wiki"
-              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg touch-target"
+              className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg"
             >
               Wiki
             </Link>
@@ -89,13 +90,13 @@ const Navbar = () => {
                 <Button
                   onClick={() => navigate("/dashboard")}
                   size="sm"
-                  className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm px-5 font-semibold btn-shimmer touch-target"
+                  className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm px-5 font-medium"
                 >
                   Dashboard
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary hover:bg-primary/30 transition-colors overflow-hidden">
+                    <button className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-xs font-medium text-primary hover:bg-primary/25 transition-colors overflow-hidden">
                       {profile?.avatar_url ? (
                         <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
                       ) : (
@@ -125,24 +126,23 @@ const Navbar = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => navigate("/login")}
-                  className="text-sm text-muted-foreground hover:text-foreground touch-target"
+                  className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Sign In
                 </Button>
                 <Button
                   onClick={() => navigate("/signup")}
                   size="sm"
-                  className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm px-5 font-semibold btn-shimmer touch-target"
+                  className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 text-sm px-5 font-medium"
                 >
                   Start Simulation
                 </Button>
               </>
             )}
 
-            {/* Mobile hamburger */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors touch-target"
+              className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Toggle menu"
             >
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -151,7 +151,7 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile menu drawer */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -167,65 +167,37 @@ const Navbar = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-card border-l border-border z-50 md:hidden p-6 pt-20"
+              className="fixed top-0 right-0 bottom-0 w-72 bg-card border-l border-border/30 z-50 md:hidden p-6 pt-20"
             >
               <div className="space-y-2">
-                <button
-                  onClick={() => scrollToSection("how-it-works")}
-                  className="block w-full text-left px-4 py-3 rounded-xl text-foreground hover:bg-muted/50 transition-colors touch-target"
-                >
+                <button onClick={() => scrollToSection("how-it-works")} className="block w-full text-left px-4 py-3 rounded-xl text-foreground hover:bg-muted/30 transition-colors">
                   How it Works
                 </button>
-                <button
-                  onClick={() => scrollToSection("personas")}
-                  className="block w-full text-left px-4 py-3 rounded-xl text-foreground hover:bg-muted/50 transition-colors touch-target"
-                >
+                <button onClick={() => scrollToSection("personas")} className="block w-full text-left px-4 py-3 rounded-xl text-foreground hover:bg-muted/30 transition-colors">
                   Examples
                 </button>
-                <Link
-                  to="/wiki"
-                  className="block w-full px-4 py-3 rounded-xl text-foreground hover:bg-muted/50 transition-colors touch-target"
-                  onClick={() => setMenuOpen(false)}
-                >
+                <Link to="/wiki" className="block w-full px-4 py-3 rounded-xl text-foreground hover:bg-muted/30 transition-colors" onClick={() => setMenuOpen(false)}>
                   Wiki
                 </Link>
-                <div className="border-t border-border pt-4 mt-4">
+                <div className="border-t border-border/30 pt-4 mt-4">
                   {user ? (
                     <div className="space-y-2">
-                      <Button
-                        onClick={() => { navigate("/dashboard"); setMenuOpen(false); }}
-                        className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold btn-shimmer touch-target"
-                      >
+                      <Button onClick={() => { navigate("/dashboard"); setMenuOpen(false); }} className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium">
                         Dashboard
                       </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => { navigate("/settings"); setMenuOpen(false); }}
-                        className="w-full justify-start text-muted-foreground"
-                      >
+                      <Button variant="ghost" onClick={() => { navigate("/settings"); setMenuOpen(false); }} className="w-full justify-start text-muted-foreground">
                         <Settings className="w-4 h-4 mr-2" /> Settings
                       </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => { handleSignOut(); setMenuOpen(false); }}
-                        className="w-full justify-start text-destructive"
-                      >
+                      <Button variant="ghost" onClick={() => { handleSignOut(); setMenuOpen(false); }} className="w-full justify-start text-destructive">
                         <LogOut className="w-4 h-4 mr-2" /> Sign Out
                       </Button>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Button
-                        onClick={() => { navigate("/signup"); setMenuOpen(false); }}
-                        className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold btn-shimmer touch-target"
-                      >
+                      <Button onClick={() => { navigate("/signup"); setMenuOpen(false); }} className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium">
                         Start Simulation
                       </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => { navigate("/login"); setMenuOpen(false); }}
-                        className="w-full text-muted-foreground"
-                      >
+                      <Button variant="ghost" onClick={() => { navigate("/login"); setMenuOpen(false); }} className="w-full text-muted-foreground">
                         Sign In
                       </Button>
                     </div>
