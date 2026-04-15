@@ -1,11 +1,12 @@
+import { motion } from "framer-motion";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie,
 } from "recharts";
-import { SENTIMENT_BY_AUDIENCE, TOP_OBJECTIONS, TOP_STRENGTHS } from "@/data/resultsMocks";
+import { SENTIMENT_BY_AUDIENCE, TOP_OBJECTIONS, TOP_STRENGTHS, RECOMMENDED_ACTIONS } from "@/data/resultsMocks";
 import { useNavigate } from "react-router-dom";
-import { RECOMMENDED_ACTIONS } from "@/data/resultsMocks";
 import { Button } from "@/components/ui/button";
+import AnimatedCounter from "@/components/AnimatedCounter";
 
 const COLORS = { excited: "#2ED573", skeptical: "#F5A623", neutral: "#64748B", hostile: "#FF4757" };
 
