@@ -71,8 +71,13 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    overflow-x: hidden;
   }
 }
 
@@ -84,6 +89,13 @@
   .glass-card {
     background: var(--card-glass);
     border: 1px solid var(--card-glass-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(79, 142, 247, 0.1);
+    border-color: rgba(79, 142, 247, 0.15);
   }
 
   .glow-primary {
@@ -107,22 +119,91 @@
       linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
     background-size: 60px 60px;
   }
+
+  /* Animated gradient background for landing page */
+  .bg-animated-gradient {
+    background: linear-gradient(135deg, hsl(222 60% 8%) 0%, hsl(222 55% 11%) 50%, hsl(222 60% 8%) 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 12s ease infinite;
+  }
+
+  /* Button shimmer effect */
+  .btn-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    transition: left 0.6s ease;
+  }
+  .btn-shimmer:hover::after {
+    left: 100%;
+  }
+
+  /* Validation shake */
+  .shake {
+    animation: shake 0.4s ease;
+  }
+
+  /* Touch target */
+  .touch-target {
+    min-height: 44px;
+  }
+}
+
+/* Keyframes */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
 
 @keyframes swarmFloat0 {
-  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); }
-  33% { transform: translate(-50%, -50%) translate(8px, -10px); }
-  66% { transform: translate(-50%, -50%) translate(-6px, 6px); }
+  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); opacity: 0.7; }
+  33% { transform: translate(-50%, -50%) translate(8px, -10px); opacity: 1; }
+  66% { transform: translate(-50%, -50%) translate(-6px, 6px); opacity: 0.8; }
 }
 
 @keyframes swarmFloat1 {
-  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); }
-  33% { transform: translate(-50%, -50%) translate(-10px, 8px); }
-  66% { transform: translate(-50%, -50%) translate(6px, -8px); }
+  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); opacity: 0.8; }
+  33% { transform: translate(-50%, -50%) translate(-10px, 8px); opacity: 0.65; }
+  66% { transform: translate(-50%, -50%) translate(6px, -8px); opacity: 1; }
 }
 
 @keyframes swarmFloat2 {
-  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); }
-  33% { transform: translate(-50%, -50%) translate(6px, 12px); }
-  66% { transform: translate(-50%, -50%) translate(-8px, -6px); }
+  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); opacity: 0.75; }
+  33% { transform: translate(-50%, -50%) translate(6px, 12px); opacity: 1; }
+  66% { transform: translate(-50%, -50%) translate(-8px, -6px); opacity: 0.7; }
+}
+
+@keyframes swarmFloat3 {
+  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); opacity: 0.85; }
+  25% { transform: translate(-50%, -50%) translate(-12px, -5px); opacity: 0.7; }
+  50% { transform: translate(-50%, -50%) translate(4px, 10px); opacity: 1; }
+  75% { transform: translate(-50%, -50%) translate(10px, -8px); opacity: 0.75; }
+}
+
+@keyframes swarmFloat4 {
+  0%, 100% { transform: translate(-50%, -50%) translate(0, 0); opacity: 0.9; }
+  33% { transform: translate(-50%, -50%) translate(14px, 6px); opacity: 0.65; }
+  66% { transform: translate(-50%, -50%) translate(-10px, -12px); opacity: 1; }
+}
+
+@keyframes confettiPop {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  50% { opacity: 1; }
+  100% { transform: scale(1) rotate(720deg) translateY(-40px); opacity: 0; }
 }
