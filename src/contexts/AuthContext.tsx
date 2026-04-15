@@ -15,6 +15,8 @@ interface Profile {
   referral_code: string;
   referred_by: string | null;
   total_referrals: number;
+  is_admin: boolean;
+  is_suspended: boolean;
   email_prefs: {
     simulation_complete: boolean;
     credit_warnings: boolean;
