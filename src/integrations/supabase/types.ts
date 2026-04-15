@@ -55,6 +55,42 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          credits_remaining: number
+          email: string | null
+          full_name: string | null
+          id: string
+          plan_tier: string
+          simulations_run: number
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          credits_remaining?: number
+          email?: string | null
+          full_name?: string | null
+          id: string
+          plan_tier?: string
+          simulations_run?: number
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          credits_remaining?: number
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          plan_tier?: string
+          simulations_run?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       simulations: {
         Row: {
           agent_posts: Json | null
@@ -74,6 +110,7 @@ export type Database = {
           simulation_question: string | null
           top_objections: Json | null
           top_strengths: Json | null
+          user_id: string | null
         }
         Insert: {
           agent_posts?: Json | null
@@ -93,6 +130,7 @@ export type Database = {
           simulation_question?: string | null
           top_objections?: Json | null
           top_strengths?: Json | null
+          user_id?: string | null
         }
         Update: {
           agent_posts?: Json | null
@@ -112,6 +150,7 @@ export type Database = {
           simulation_question?: string | null
           top_objections?: Json | null
           top_strengths?: Json | null
+          user_id?: string | null
         }
         Relationships: []
       }
