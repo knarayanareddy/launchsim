@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -25,6 +25,7 @@ const getStrength = (pw: string): { label: string; color: string; width: string 
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +33,14 @@ const Signup = () => {
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Capture referral code from URL
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) {
+      localStorage.setItem("launchsim_ref", ref);
+    }
+  }, [searchParams]);
 
   const strength = getStrength(password);
 
@@ -73,6 +82,13 @@ const Signup = () => {
     supabase.functions.invoke("send-email", {
       body: { to: email, template: "welcome", data: { name: fullName || "there" } },
     }).catch(console.error);
+
+    // Process referral if present
+    const refCode = localStorage.getItem("launchsim_ref");
+    if (refCode) {
+      // We'll process this after the user confirms their email and logs in
+      // Keep it in localStorage for the post-login flow
+    }
 
     toast.success("Check your email to confirm your account!");
     navigate("/login", { state: { onboarding: true } });

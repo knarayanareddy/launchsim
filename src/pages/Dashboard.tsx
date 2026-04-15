@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -97,6 +97,9 @@ const Dashboard = () => {
     <DashboardLayout>
       <SEO title="Dashboard" path="/dashboard" noIndex />
       <div className="max-w-6xl mx-auto space-y-8">
+        {/* Referral banner */}
+        <ReferralBanner />
+
         {/* Resume onboarding banner */}
         {profile && !profile.onboarding_completed && (
           <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 flex items-center justify-between">

@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, Upload, AlertTriangle, Mail } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import ReferralSection from "@/components/settings/ReferralSection";
 
 const Settings = () => {
   const { user, profile, signOut, refreshProfile } = useAuth();
@@ -221,6 +222,9 @@ const Settings = () => {
             Save Preferences
           </Button>
         </section>
+
+        {/* Referral */}
+        <ReferralSection />
 
         {/* Danger Zone */}
         <section className="border border-destructive/30 rounded-xl p-6 space-y-3">
