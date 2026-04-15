@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { FileDown, Lock, Loader2, Send } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import OverviewTab from "@/components/results/OverviewTab";
 import ObjectionsTab from "@/components/results/ObjectionsTab";
 import StrengthsTab from "@/components/results/StrengthsTab";
@@ -17,8 +18,11 @@ import type { SimulationResult } from "@/hooks/useSimulation";
 const TABS = ["Overview", "Objections", "Strengths", "Agent Feed", "Refined Pitch"];
 
 // Placeholder: replace with real user plan logic
-const getUserPlan = (): "free" | "pro" | "unlimited" => "unlimited";
-const USER_PLAN = getUserPlan();
+const getUserPlan = (profile: any): "free" | "pro" | "unlimited" => {
+  const tier = profile?.plan_tier || "free";
+  if (tier === "enterprise") return "unlimited";
+  return tier as "free" | "pro" | "unlimited";
+};
 
 const Results = () => {
   const navigate = useNavigate();
