@@ -92,11 +92,12 @@ const SimulationConfig = ({
               <button
                 key={aud.id}
                 onClick={() => toggleAudience(aud.id)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all touch-target active:scale-110 ${
                   selected
-                    ? "bg-primary/15 border-primary/40 text-foreground"
+                    ? "bg-primary/15 border-primary/40 text-foreground scale-105"
                     : "bg-transparent border-border text-muted-foreground hover:border-muted-foreground/40"
                 }`}
+                style={{ transition: "all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1)" }}
               >
                 {aud.emoji} {aud.label}
               </button>
