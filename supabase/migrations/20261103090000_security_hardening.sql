@@ -92,7 +92,7 @@ AS $$
   LIMIT 1
 $$;
 
-REVOKE ALL ON FUNCTION public.get_shared_simulation(text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.get_shared_simulation(text) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.get_shared_simulation(text) TO anon, authenticated;
 
 -- Explicitly share a simulation: mints a token the first time and records when
@@ -117,7 +117,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.share_simulation(uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.share_simulation(uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.share_simulation(uuid) TO authenticated;
 
 -- ---------------------------------------------------------------------------
@@ -159,8 +159,11 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.spend_credit(uuid) FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.refund_credit(uuid) FROM PUBLIC;
+-- Supabase grants EXECUTE to anon/authenticated by default for functions created
+-- in `public`. `REVOKE ... FROM PUBLIC` alone does NOT remove those explicit
+-- grants, so the API roles must be revoked from by name as well.
+REVOKE ALL ON FUNCTION public.spend_credit(uuid) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.refund_credit(uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.spend_credit(uuid) TO service_role;
 GRANT EXECUTE ON FUNCTION public.refund_credit(uuid) TO service_role;
 
@@ -206,7 +209,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.award_referral(uuid, uuid) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.award_referral(uuid, uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.award_referral(uuid, uuid) TO service_role;
 
 -- ---------------------------------------------------------------------------

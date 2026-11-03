@@ -43,6 +43,14 @@ through `get_shared_simulation(token)`, which returns exactly one row. A share
 token is 8 hex characters — treat it as a bearer capability: anyone with the
 link can read that one report.
 
+### Verifying policies
+
+Policy mistakes are invisible until someone exploits them. `supabase/tests/`
+contains executable assertions for every guarantee above; run them before
+merging a migration. One trap worth remembering: `REVOKE ALL ... FROM PUBLIC`
+leaves Supabase's default grants to `anon`/`authenticated` intact, so privileged
+functions must also be revoked from those roles explicitly.
+
 ### Known gaps
 
 - **No payment provider.** Upgrades are manual; `/pricing` does not take cards.

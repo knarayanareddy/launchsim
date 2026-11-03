@@ -389,13 +389,42 @@ npm run test:coverage      # with v8 coverage
 `src/test/fakes.ts` provides a chainable fake of the Supabase client, so service
 code can be tested without a live project.
 
+### Database tests
+
+Migrations are validated against a real PostgreSQL engine, so you don't need
+Docker or the Supabase CLI:
+
+```bash
+pip install pgserver          # ships a PostgreSQL binary as a wheel
+cd supabase/tests
+python3 verify_migrations.py  # applies every migration + asserts schema invariants
+python3 security_test.py      # 37 RLS/grant assertions as anon + authenticated
+```
+
+`verify_migrations.py` catches statements that don't apply; `security_test.py`
+proves the guarantees hold by attempting the attacks the hardening was meant to
+stop (self-promotion to admin, minting credits, reading someone else's pitch,
+double-awarding referrals, and so on). Both run in CI on any change under
+`supabase/`.
+
+`supabase/tests/bootstrap.sql` recreates the parts of a Supabase database these
+tests depend on (the `anon`/`authenticated`/`service_role` roles, `auth.uid()`,
+`storage.*`, and Supabase's default table/function grants).
+
+> **Why not `supabase db reset`?** It needs Docker. `pgserver` needs neither
+> Docker nor a system Postgres, which makes the checks runnable anywhere,
+> including CI and sandboxes. Run the real `supabase db reset` too if you have it.
+
 ### Adding a migration
 
 1. Create `supabase/migrations/<timestamp>_<name>.sql`.
 2. Add/adjust RLS policies **and** the column grants in the same file — a policy
    alone does not stop a client from writing columns it can `UPDATE`.
 3. Regenerate `src/integrations/supabase/types.ts` if the schema changed.
-4. Run `npm run check`.
+4. Revoke new privileged functions from the API roles **by name**
+   (`REVOKE ALL ON FUNCTION f() FROM PUBLIC, anon, authenticated;`).
+   `FROM PUBLIC` alone does not remove Supabase's explicit default grant.
+5. Run `npm run check` **and** the two scripts in `supabase/tests/`.
 
 ---
 

@@ -39,3 +39,7 @@ coverage
 # Supabase local dev
 supabase/.temp
 supabase/.branches
+
+# Python (migration test harness)
+__pycache__/
+*.py[cod]

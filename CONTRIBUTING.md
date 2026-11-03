@@ -48,6 +48,19 @@ Every migration lives in `supabase/migrations/` with a timestamp prefix, and it
 should include its own policies and grants. Regenerate
 `src/integrations/supabase/types.ts` when the schema changes.
 
+Test database changes locally without Docker:
+
+```bash
+pip install pgserver
+cd supabase/tests
+python3 verify_migrations.py   # migrations apply + schema invariants
+python3 security_test.py       # RLS / grant assertions
+```
+
+Both run in CI (`.github/workflows/migrations.yml`). Note that
+`REVOKE ... FROM PUBLIC` does **not** remove Supabase's default `EXECUTE` grant to
+`anon`/`authenticated`; revoke those roles by name.
+
 ### Frontend
 
 - **No demo data as a silent fallback.** If a real result cannot be produced,
