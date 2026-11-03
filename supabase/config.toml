@@ -1,1 +1,49 @@
 project_id = "snxkylbalxyhwtyzgbgf"
+
+# Edge function configuration.
+# `verify_jwt = false` is kept only where the function performs its own auth
+# (all LaunchSim functions verify the caller manually, because they also accept
+# the service-role key for internal calls). If you add a public endpoint, keep
+# this list minimal — an unlisted function defaults to requiring a JWT.
+[functions.run-simulation]
+verify_jwt = false
+
+[functions.process-referral]
+verify_jwt = false
+
+[functions.send-email]
+verify_jwt = false
+
+[functions.notion-export]
+verify_jwt = false
+
+# Local development
+[api]
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+port = 54323
+
+[auth]
+site_url = "http://localhost:8080"
+additional_redirect_urls = [
+  "http://localhost:8080",
+  "http://localhost:4173",
+  "https://launchsim.lovable.app",
+  "https://launchsim.app",
+]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true

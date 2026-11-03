@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 interface CompletionOverlayProps {
   onViewReport: () => void;
   score?: number;
+  /** Number of personas generated; the copy used to hardcode "200". */
+  agentCount?: number;
 }
 
-const CompletionOverlay = ({ onViewReport, score = 71 }: CompletionOverlayProps) => {
+const CompletionOverlay = ({ onViewReport, score = 0, agentCount }: CompletionOverlayProps) => {
   return (
     <motion.div
       initial={{ y: "100%" }}
@@ -23,7 +25,10 @@ const CompletionOverlay = ({ onViewReport, score = 71 }: CompletionOverlayProps)
             transition={{ delay: 0.3 }}
           >
             <p className="text-lg mb-2">
-              🎉 Your simulation is complete — <span className="font-bold text-foreground">200 agents have spoken</span>
+              🎉 Your simulation is complete —{" "}
+              <span className="font-bold text-foreground">
+                {agentCount ? `${agentCount} agents have spoken` : "the swarm has spoken"}
+              </span>
             </p>
             <div className="flex items-center justify-center gap-2 mb-6">
               <span className="text-muted-foreground text-sm">Launch Readiness Score:</span>

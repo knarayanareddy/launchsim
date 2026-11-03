@@ -3,11 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { getSimulationByShareToken } from "@/lib/simulationService";
+import SEO from "@/components/SEO";
 
 const WikiReport = () => {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
-  const [simulation, setSimulation] = useState<any>(null);
+  const [simulation, setSimulation] = useState<Awaited<ReturnType<typeof getSimulationByShareToken>> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,6 +48,11 @@ const WikiReport = () => {
 
   return (
     <div className="min-h-screen pb-20">
+      <SEO
+        title="Shared Simulation Report"
+        description={`A shared LaunchSim report scoring ${simulation.overall_score}/100 for launch readiness.`}
+        path={`/wiki/${token}`}
+      />
       <div className="border-b border-border/50 bg-background/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">

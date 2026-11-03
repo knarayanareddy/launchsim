@@ -80,6 +80,7 @@ const dbToForm = (p: DBPersona): PersonaForm => ({
   years_experience: p.years_experience ?? 5,
   company_type: p.company_type,
   company_size: p.company_size,
+  // The column is text[] since 20261103090000; tolerate legacy scalar values.
   industry: Array.isArray(p.industry) ? p.industry : p.industry ? [p.industry] : [],
   personality_type: p.personality_type,
   secondary_traits: p.secondary_traits || [],
@@ -217,7 +218,8 @@ const Personas = () => {
     if (editing === "new") {
       const { data, error } = await supabase.from("custom_personas").insert(payload as any).select().single();
       if (error) {
-        toast.error("Failed to save persona");
+        console.error("Failed to create persona:", error);
+        toast.error("Failed to save persona", { description: error.message });
       } else {
         setPersonas((prev) => [data as DBPersona, ...prev]);
         toast.success(`${form.emoji} ${form.name} created!`);
@@ -226,7 +228,8 @@ const Personas = () => {
     } else {
       const { data, error } = await supabase.from("custom_personas").update(payload as any).eq("id", editing!).select().single();
       if (error) {
-        toast.error("Failed to update persona");
+        console.error("Failed to update persona:", error);
+        toast.error("Failed to update persona", { description: error.message });
       } else {
         setPersonas((prev) => prev.map((p) => (p.id === editing ? (data as DBPersona) : p)));
         toast.success(`${form.emoji} ${form.name} updated!`);

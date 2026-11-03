@@ -77,7 +77,7 @@ export type Database = {
           has_built_product: boolean | null
           has_invested: boolean | null
           id: string
-          industry: string | null
+          industry: string[] | null
           influence_level: number | null
           is_public: boolean | null
           job_title: string | null
@@ -128,7 +128,7 @@ export type Database = {
           has_built_product?: boolean | null
           has_invested?: boolean | null
           id?: string
-          industry?: string | null
+          industry?: string[] | null
           influence_level?: number | null
           is_public?: boolean | null
           job_title?: string | null
@@ -179,7 +179,7 @@ export type Database = {
           has_built_product?: boolean | null
           has_invested?: boolean | null
           id?: string
-          industry?: string | null
+          industry?: string[] | null
           influence_level?: number | null
           is_public?: boolean | null
           job_title?: string | null
@@ -344,6 +344,7 @@ export type Database = {
           product_description: string
           sentiment_breakdown: Json | null
           share_token: string | null
+          shared_at: string | null
           sharpened_pitch: string | null
           simulation_question: string | null
           top_objections: Json | null
@@ -365,6 +366,7 @@ export type Database = {
           product_description: string
           sentiment_breakdown?: Json | null
           share_token?: string | null
+          shared_at?: string | null
           sharpened_pitch?: string | null
           simulation_question?: string | null
           top_objections?: Json | null
@@ -386,6 +388,7 @@ export type Database = {
           product_description?: string
           sentiment_breakdown?: Json | null
           share_token?: string | null
+          shared_at?: string | null
           sharpened_pitch?: string | null
           simulation_question?: string | null
           top_objections?: Json | null
@@ -402,12 +405,113 @@ export type Database = {
           },
         ]
       }
+      error_logs: {
+        Row: {
+          created_at: string
+          error_message: string
+          id: string
+          page: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message: string
+          id?: string
+          page?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string
+          id?: string
+          page?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      feature_flags: {
+        Row: {
+          created_at: string
+          description: string | null
+          enabled: boolean
+          flag_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          flag_name: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          flag_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      system_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      award_referral: {
+        Args: { _referrer_id: string; _referred_id: string }
+        Returns: boolean
+      }
+      get_shared_simulation: {
+        Args: { _token: string }
+        Returns: {
+          agent_posts: Json | null
+          audience_mix: string[]
+          created_at: string
+          crowd_size: number
+          depth: string
+          group_id: string | null
+          id: string
+          key_quote: string | null
+          key_quote_agent: string | null
+          overall_score: number
+          platform: string
+          product_description: string
+          sentiment_breakdown: Json | null
+          share_token: string | null
+          shared_at: string | null
+          sharpened_pitch: string | null
+          simulation_question: string | null
+          top_objections: Json | null
+          top_strengths: Json | null
+          user_id: string | null
+        }[]
+      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      refund_credit: { Args: { _user_id: string }; Returns: undefined }
+      share_simulation: { Args: { _simulation_id: string }; Returns: string }
+      spend_credit: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

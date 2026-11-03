@@ -6,7 +6,7 @@ import LiveFeed from "@/components/simulation/LiveFeed";
 import CompletionOverlay from "@/components/simulation/CompletionOverlay";
 import { MOCK_AGENTS, MOCK_FEED, STATUS_MESSAGES } from "@/data/simulationMocks";
 import { useSimulation } from "@/hooks/useSimulation";
-import { X } from "lucide-react";
+import { AlertCircle, X } from "lucide-react";
 
 const SIMULATION_DURATION = 15000;
 const AGENT_INTERVAL = 650;
@@ -216,6 +216,34 @@ const Simulation = () => {
         </div>
       </div>
 
+      {/* Hard failure: the run could not start (no credits, suspended, offline).
+          Previously this showed demo data as though the simulation had run. */}
+      {aiError && !aiResult && (
+        <div className="container mx-auto px-4 md:px-6 pt-4">
+          <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-foreground">This simulation didn't run</p>
+              <p className="text-xs text-muted-foreground mt-1">{aiError}</p>
+              <div className="flex gap-2 mt-3">
+                <button
+                  onClick={() => navigate("/studio")}
+                  className="text-xs font-medium text-primary hover:underline"
+                >
+                  Back to Studio
+                </button>
+                <button
+                  onClick={() => navigate("/pricing")}
+                  className="text-xs font-medium text-primary hover:underline"
+                >
+                  View plans
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main theater */}
       <div className="flex-1 container mx-auto px-4 md:px-6 py-4 md:py-6">
         <div className="grid lg:grid-cols-[3fr_2fr] gap-4 md:gap-6 h-full">
@@ -225,10 +253,11 @@ const Simulation = () => {
       </div>
 
       <AnimatePresence>
-        {complete && (
+        {complete && !(aiError && !aiResult) && (
           <CompletionOverlay
             onViewReport={handleViewReport}
             score={aiResult?.overall_score}
+            agentCount={aiResult?.agents?.length}
           />
         )}
       </AnimatePresence>

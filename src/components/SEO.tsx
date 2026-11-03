@@ -1,11 +1,8 @@
 import { Helmet } from "react-helmet-async";
+import { APP_URL, SITE_NAME, DEFAULT_TITLE, DEFAULT_DESCRIPTION } from "@/lib/config";
 
-const SITE_NAME = "LaunchSim";
-const DEFAULT_TITLE = "LaunchSim — Simulate Your Product Launch Before You Ship";
-const DEFAULT_DESC =
-  "LaunchSim uses swarm AI to simulate how 1,000 real users would react to your product — before you ship. Get a sentiment map, objections, and refined pitch in 60 seconds.";
-const BASE_URL = "https://launchsim.lovable.app";
-const DEFAULT_OG = `${BASE_URL}/og-default.jpg`;
+const DEFAULT_DESC = DEFAULT_DESCRIPTION;
+const DEFAULT_OG = `${APP_URL}/og-default.jpg`;
 
 interface SEOProps {
   title?: string;
@@ -23,7 +20,7 @@ const SEO = ({
   noIndex = false,
 }: SEOProps) => {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : DEFAULT_TITLE;
-  const canonical = `${BASE_URL}${path}`;
+  const canonical = `${APP_URL}${path}`;
 
   return (
     <Helmet>

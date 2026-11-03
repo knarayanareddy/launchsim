@@ -6,11 +6,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Lock, ArrowLeftRight, RotateCcw, Quote, Trophy, ArrowRight } from "lucide-react";
+import { Lock, ArrowLeftRight, RotateCcw, Quote, Trophy } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  Cell, Legend,
+  Legend,
 } from "recharts";
+import { planLevel } from "@/lib/config";
 
 interface SimOption {
   id: string;
@@ -26,19 +27,11 @@ interface SimOption {
   agent_posts: any;
 }
 
-const SENTIMENT_COLORS: Record<string, string> = {
-  excited: "#2ED573",
-  supportive: "#4F8EF7",
-  neutral: "#64748B",
-  skeptical: "#F5A623",
-  hostile: "#FF4757",
-};
-
 const Compare = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const plan = profile?.plan_tier || "free";
+  const plan = planLevel(profile?.plan_tier);
 
   const [sims, setSims] = useState<SimOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -185,9 +178,6 @@ function SimSelector({
   label: string; value: string; onChange: (v: string) => void;
   sims: SimOption[]; excludeId: string;
 }) {
-  const scoreColor = (s: number) =>
-    s >= 70 ? "text-success" : s >= 50 ? "text-warning" : "text-destructive";
-
   return (
     <div className="space-y-2">
       <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{label}</label>

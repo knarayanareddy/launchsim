@@ -13,9 +13,11 @@ interface NotionExportModalProps {
   onOpenChange: (open: boolean) => void;
   result: SimulationResult;
   description: string;
+  /** Saved simulation to export. The server loads the report from this id. */
+  simulationId: string | null;
 }
 
-const NotionExportModal = ({ open, onOpenChange, result, description }: NotionExportModalProps) => {
+const NotionExportModal = ({ open, onOpenChange, result, description, simulationId }: NotionExportModalProps) => {
   const [token, setToken] = useState("");
   const [pageId, setPageId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,19 +27,21 @@ const NotionExportModal = ({ open, onOpenChange, result, description }: NotionEx
       toast.error("Please fill in both fields.");
       return;
     }
+    if (!simulationId) {
+      toast.error("Save the simulation before exporting.");
+      return;
+    }
 
     setLoading(true);
     try {
+      // The report itself is no longer trusted from the client: only the id and
+      // the user's own Notion credentials cross the wire.
       const { data, error } = await supabase.functions.invoke("notion-export", {
         body: {
           notionToken: token.trim(),
           parentPageId: pageId.trim(),
-          title: description.slice(0, 60),
-          score: result.overall_score,
-          sentimentBreakdown: result.sentiment_breakdown,
-          objections: result.top_objections,
-          strengths: result.top_strengths,
-          refinedPitch: result.sharpened_pitch,
+          simulationId,
+          title: description.slice(0, 120),
           recommendedActions: result.recommended_actions,
         },
       });
@@ -51,6 +55,8 @@ const NotionExportModal = ({ open, onOpenChange, result, description }: NotionEx
           ? { label: "Open →", onClick: () => window.open(data.url, "_blank") }
           : undefined,
       });
+      // Clear the credential from memory once it has served its purpose.
+      setToken("");
       onOpenChange(false);
     } catch (err) {
       console.error("Notion export error:", err);
@@ -99,7 +105,8 @@ const NotionExportModal = ({ open, onOpenChange, result, description }: NotionEx
               className="font-mono text-sm bg-muted/30 border-border"
             />
             <p className="text-xs text-muted-foreground">
-              Copy the 32-character ID from the Notion page URL
+              Copy the 32-character ID from the Notion page URL. Share the page with
+              your integration first, or Notion will refuse the export.
             </p>
           </div>
 

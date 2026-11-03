@@ -4,7 +4,7 @@ import { checkEnvVars } from "./lib/envCheck";
 import App from "./App.tsx";
 import "./index.css";
 
-const { ok, missing } = checkEnvVars();
+const { ok } = checkEnvVars();
 
 if (!ok && import.meta.env.PROD) {
   document.getElementById("root")!.innerHTML = `

@@ -1,24 +1,35 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { preflight, json, serverError, escapeHtml } from "../_shared/cors.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-const APP_URL = "https://launchsim.lovable.app";
+const APP_URL = Deno.env.get("APP_URL") || "https://launchsim.lovable.app";
+const FROM_ADDRESS = Deno.env.get("EMAIL_FROM") || "LaunchSim <onboarding@resend.dev>";
 
 type Template = "welcome" | "simulation-complete" | "low-credits" | "upgrade-confirmation";
 
 interface EmailRequest {
   to: string;
   template: Template;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Which profile.email_prefs key gates each template. `welcome` and
+ * `upgrade-confirmation` are transactional and always sent.
+ */
+const PREF_KEY: Partial<Record<Template, string>> = {
+  "simulation-complete": "simulation_complete",
+  "low-credits": "credit_warnings",
+};
+
+/** Templates accepted from a browser session (fire-and-forget after signup). */
+const CLIENT_ALLOWED: Template[] = ["welcome"];
+
 function buildWelcome(data: Record<string, any>) {
-  const name = data.name || "there";
+  const name = escapeHtml(String(data.name || "there")).slice(0, 80);
   return {
     subject: "🐟 Welcome to LaunchSim — your first simulation awaits",
     html: `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -161,33 +172,83 @@ const templateBuilders: Record<Template, (data: Record<string, any>) => { subjec
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return preflight(req);
+  if (req.method !== "POST") return json(req, { error: "Method not allowed" }, 405);
 
   try {
     if (!RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY is not configured");
+      return serverError(req, "RESEND_API_KEY is not configured");
     }
 
-    const { to, template, data }: EmailRequest = await req.json();
+    // --- Authorisation ---------------------------------------------------
+    // This function used to be callable by anyone with the public anon key,
+    // which turned it into an open relay for phishing through our Resend
+    // account. Callers must now either present the service-role key (internal
+    // calls) or be an authenticated admin (dashboard).
+    const authHeader = req.headers.get("authorization") || "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
 
-    if (!to || !template) {
-      return new Response(JSON.stringify({ error: "Missing required fields: to, template" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!token) return json(req, { error: "Unauthorized" }, 401);
+
+    const isInternal = serviceKey.length > 0 && token === serviceKey;
+    let callerId: string | null = null;
+
+    if (!isInternal) {
+      const { data: { user } } = await createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
+      }).auth.getUser();
+      if (!user) return json(req, { error: "Unauthorized" }, 401);
+      callerId = user.id;
+    }
+
+    let body: EmailRequest;
+    try {
+      body = await req.json();
+    } catch {
+      return json(req, { error: "Invalid JSON body" }, 400);
+    }
+
+    const { to, template } = body;
+    const data = (body.data && typeof body.data === "object" ? body.data : {}) as Record<string, any>;
+
+    if (typeof to !== "string" || !EMAIL_RE.test(to)) {
+      return json(req, { error: "A valid `to` address is required" }, 400);
     }
 
     const builder = templateBuilders[template];
-    if (!builder) {
-      return new Response(JSON.stringify({ error: `Unknown template: ${template}` }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!builder) return json(req, { error: `Unknown template: ${template}` }, 400);
+
+    // Session callers may only trigger their own welcome email, and only to
+    // the address on their own account.
+    if (callerId) {
+      if (!CLIENT_ALLOWED.includes(template)) {
+        return json(req, { error: "Not permitted for this template" }, 403);
+      }
+      const admin = createClient(supabaseUrl, serviceKey);
+      const { data: callerProfile } = await admin
+        .from("profiles")
+        .select("email, email_prefs, is_admin")
+        .eq("id", callerId)
+        .single();
+
+      if (!callerProfile?.is_admin) {
+        const ownEmail = (callerProfile?.email || "").toLowerCase();
+        if (!ownEmail || ownEmail !== to.toLowerCase()) {
+          return json(req, { error: "Not permitted" }, 403);
+        }
+      }
+
+      // Honour the user's marketing/notification preference.
+      const prefKey = PREF_KEY[template];
+      if (prefKey && callerProfile?.email_prefs && callerProfile.email_prefs[prefKey] === false) {
+        return json(req, { success: true, skipped: "preference_disabled" });
+      }
     }
 
-    const { subject, html, text } = builder(data || {});
+    const { subject, html, text } = builder(data);
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -195,34 +256,18 @@ serve(async (req) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
-      body: JSON.stringify({
-        from: "LaunchSim <onboarding@resend.dev>",
-        to: [to],
-        subject,
-        html,
-        text,
-      }),
+      body: JSON.stringify({ from: FROM_ADDRESS, to: [to], subject, html, text }),
     });
 
-    const result = await res.json();
+    const result = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      console.error("Resend API error:", result);
-      return new Response(JSON.stringify({ error: "Failed to send email", details: result }), {
-        status: res.status,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      console.error("Resend API error:", res.status, result);
+      return json(req, { error: "Failed to send email" }, 502);
     }
 
-    return new Response(JSON.stringify({ success: true, id: result.id }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json(req, { success: true, id: (result as any).id });
   } catch (error) {
-    console.error("send-email error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return serverError(req, error);
   }
 });

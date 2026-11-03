@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
@@ -60,7 +59,7 @@ interface ErrorLog {
 
 // ─── Component ──────────────────────────────────────────────────
 const Admin = () => {
-  const { user, profile, isLoading } = useAuth();
+  const { profile, isLoading } = useAuth();
   const navigate = useNavigate();
 
   // Redirect non-admins silently
@@ -515,7 +514,7 @@ function SimulationsTab() {
                   <TableCell className="text-right">
                     <div className="flex gap-1 justify-end">
                       <Button size="sm" variant="ghost" className="h-7 px-2 text-[10px]" asChild>
-                        <a href={`/results?id=${s.id}`} target="_blank" rel="noreferrer">
+                        <a href={`/results/${s.id}`} target="_blank" rel="noreferrer">
                           <Eye className="w-3 h-3 mr-1" /> View
                         </a>
                       </Button>

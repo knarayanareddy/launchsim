@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { Copy, Mail, Twitter, Linkedin, Gift, Check } from "lucide-react";
-
-const APP_URL = "https://launchsim.lovable.app";
+import { APP_URL } from "@/lib/config";
 
 interface ReferralEvent {
   id: string;
@@ -22,9 +21,9 @@ const TIERS = [
 ];
 
 export default function ReferralSection() {
-  const { profile, refreshProfile } = useAuth();
+  const { profile } = useAuth();
   const [events, setEvents] = useState<ReferralEvent[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
   const referralCode = profile?.referral_code || "";
