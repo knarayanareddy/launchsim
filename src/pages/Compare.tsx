@@ -184,7 +184,7 @@ function SimSelector({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 appearance-none"
+        className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 text-sm text-foreground focus:outline-hidden focus:ring-2 focus:ring-primary/50 appearance-none"
       >
         <option value="">Select a simulation...</option>
         {sims

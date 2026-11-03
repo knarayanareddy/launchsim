@@ -78,10 +78,14 @@ expects v4+ breaks ESLint at config load.
   requests back to back. Put a gateway limit in front before scaling.
 - **CSP is not configured.** Consider adding a `Content-Security-Policy` header
   at the hosting layer.
-- **No formal red-team/pen-test has been performed.** Coverage is the 37
+- **No formal red-team/pen-test has been performed.** Coverage is the 40
   executable RLS/grant assertions in `supabase/tests/security_test.py` plus the
   CI dependency audit. Auth/session logic, rate limiting and the payment flow
   have not been reviewed by an adversarial third party.
-- **Toolchain majors pending.** React 18→19, Tailwind 3→4, TypeScript 5→7,
-  Recharts 2→3 and sonner 1→2 are still behind. These need their own migration
-  PR with a visual regression pass; they are not security-driven.
+- **TypeScript is held at 6.x on purpose.** Latest is 7.0.2, but
+  `typescript-eslint` (8.72.1, the newest release) hard-refuses it at import:
+  "typescript-eslint does not support TS 7.0." Linting is part of CI, so
+  adopting TS 7 today would mean disabling lint or pinning a separate older
+  TypeScript just for ESLint. Revisit when typescript-eslint ships TS 7
+  support; `npm install -D typescript@latest` will fail the lint step until
+  then.

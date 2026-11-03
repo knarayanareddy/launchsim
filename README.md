@@ -84,17 +84,17 @@ One-click export of any simulation report into a Notion page via the `notion-exp
 
 | Layer | Technology |
 |---|---|
-| **Framework** | React 18 + Vite 8 |
-| **Language** | TypeScript 5 |
-| **Styling** | Tailwind CSS v3 + shadcn/ui |
+| **Framework** | React 19 + Vite 8 |
+| **Language** | TypeScript 6 |
+| **Styling** | Tailwind CSS v4 + shadcn/ui |
 | **Animation** | Framer Motion |
-| **Charts** | Recharts |
+| **Charts** | Recharts 3 |
 | **Routing** | React Router v7 |
 | **State / Data** | TanStack Query + React Context |
 | **Backend** | Lovable Cloud (Supabase: Postgres, Auth, Edge Functions, Storage) |
 | **AI** | Lovable AI Gateway (Google Gemini 2.5 Flash) |
 | **Email** | Resend (via `send-email` edge function) |
-| **Testing** | Vitest 5 + Testing Library |
+| **Testing** | Vitest 5 + Testing Library + render smoke tests |
 
 ---
 
@@ -186,8 +186,7 @@ launchsim/
 │       ├── notion-export/        # Notion integration
 │       ├── process-referral/     # Referral credit logic
 │       └── send-email/           # Transactional emails
-├── tailwind.config.ts
-└── vite.config.ts
+└── vite.config.ts                # incl. @tailwindcss/vite; theme lives in src/index.css
 ```
 
 ---

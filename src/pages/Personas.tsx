@@ -376,7 +376,7 @@ const Personas = () => {
                 {/* Free plan lock slot */}
                 {isFree && personas.length >= 5 && (
                   <div className="rounded-xl border border-border/30 bg-card/30 overflow-hidden flex flex-col items-center justify-center p-6 text-center opacity-60 blur-[1px] relative">
-                    <div className="absolute inset-0 flex items-center justify-center z-10 blur-0">
+                    <div className="absolute inset-0 flex items-center justify-center z-10 blur-none">
                       <div className="text-center space-y-2">
                         <Lock className="w-6 h-6 text-muted-foreground mx-auto" />
                         <p className="text-xs text-muted-foreground font-medium">Upgrade for unlimited</p>

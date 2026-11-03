@@ -16,8 +16,49 @@ pins 22). Vitest 5 and ESLint 10 dropped Node 20 support.
 npm run check     # typecheck + lint + test
 ```
 
-CI (`.github/workflows/ci.yml`) runs the same four steps — install, typecheck,
-lint, test, build — so a green local `npm run check` means a green PR.
+CI (`.github/workflows/ci.yml`) runs the same steps — install, typecheck,
+audit, lint, test, build — so a green local `npm run check` means a green PR.
+
+## Styling (Tailwind v4)
+
+The theme lives in `src/index.css`, not in a JS config: v4 has no
+`tailwind.config.ts` and no `postcss.config.js`. Colours are declared in
+`@theme inline` as `--color-*`, so `bg-primary` resolves through
+`hsl(var(--primary))` and opacity modifiers (`bg-primary/50`) go through
+`color-mix` with a solid fallback.
+
+Two things to know before changing styling:
+
+- **Dark mode is class-based**, re-declared with
+  `@custom-variant dark (&:where(.dark, .dark *))`. v4 defaults to
+  `prefers-color-scheme`; deleting that line silently breaks every `dark:`
+  utility.
+- **The blur and shadow scales were renumbered in v4.** v3's `blur-sm` is v4's
+  `blur-xs`, and v3's `shadow-sm` is v4's `shadow-xs`. `--blur-sm` and
+  `--shadow-sm` are pinned in `@theme` to their v3 values so existing call
+  sites keep rendering identically. Removing those pins shifts every blur by
+  4px and every shadow by a step.
+
+`outline-none` also changed meaning: v4 makes it a true `outline-style: none`,
+whereas v3 kept a transparent outline so Windows high-contrast mode still drew
+a focus ring. Use `outline-hidden` for the old behaviour — that is what the
+codebase uses.
+
+### Checking a Tailwind change
+
+Utility regressions are silent: a dropped class renders as "no styles" without
+erroring. `scripts/css-manifest.mjs` compiles the stylesheet and records every
+selector with its resolved declarations, then diffs two runs:
+
+```bash
+npm run css:manifest -- --out /tmp/before.json
+# ...change styling...
+npm run css:manifest -- --out /tmp/after.json
+npm run css:manifest -- --diff /tmp/before.json /tmp/after.json
+```
+
+The diff exits non-zero if a class the app actually references stops producing
+CSS. Use it before upgrading Tailwind or touching the theme.
 
 ## Ground rules
 
@@ -82,6 +123,14 @@ Add a test when you touch:
 - anything that decides whether data is persisted
 
 `src/test/fakes.ts` gives you a chainable fake Supabase client.
+
+`src/test/render.test.tsx` mounts real component trees — Radix portals, Recharts
+charts, the Sonner toaster — and fails if React logs an error while mounting.
+This is the safety net for framework upgrades, where the unit tests happily pass
+while a component throws at runtime. Add a case when you adopt a new UI
+primitive. Two jsdom caveats it already handles: `ResizeObserver` is stubbed,
+and Recharts charts need `isAnimationActive={false}` or their sectors never
+mount.
 
 ## Commit style
 

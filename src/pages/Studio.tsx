@@ -253,7 +253,7 @@ const Studio = () => {
                         value={newGroupName}
                         onChange={(e) => setNewGroupName(e.target.value)}
                         placeholder="e.g. LaunchSim, My Fitness App"
-                        className="w-full h-9 px-3 rounded-lg bg-white/5 border border-white/10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                        className="w-full h-9 px-3 rounded-lg bg-white/5 border border-white/10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
                       />
                     </div>
                   )}

@@ -12,9 +12,111 @@
 @import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/700.css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4: the engine is imported from CSS and the theme is declared here
+   via @theme instead of tailwind.config.ts. The raw `<alpha-value>` trick and
+   the JS config are gone; bare HSL channels still work because each token
+   below is wrapped in hsl() at definition time. */
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+/* darkMode: ["class"] in v3 — v4 defaults to prefers-color-scheme, so the
+   class strategy has to be re-declared. Without this every `dark:` variant
+   would silently stop responding to the .dark class. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* v3 theme.extend.borderRadius mapped lg/md/sm onto --radius. v4 changes the
+     *default* radius scale, so these three must be pinned explicitly or every
+     rounded-lg/md/sm in the app shifts by a few pixels. */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  /* v4 renumbered the blur and shadow scales: what v3 called `blur-sm` is now
+     `blur-xs`, and v3's `shadow-sm` is now `shadow-xs`. Rather than rewrite
+     every call site (and risk a silent 4px -> 8px blur widening), pin the two
+     names the app actually uses to their v3 values. */
+  --blur-sm: 4px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-pulse-glow: pulse-glow 3s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+}
+
+/* The container utility is configured from CSS in v4; v3 had it under
+   theme.container with a 2rem padding and a 1400px 2xl breakpoint. */
+@utility container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 2rem;
+
+  /* v4's built-in container grows through max-widths at every breakpoint
+     (36rem ... 96rem). v3 set theme.container.screens to { 2xl: 1400px }
+     instead, so it had NO max-width below 1400px. `none` is declared first so
+     it overrides those built-in values, and is then replaced at 2xl only.
+     @variant inside @utility does not emit, hence the literal media query. */
+  max-width: none;
+  @media (min-width: 1400px) {
+    max-width: 1400px;
+  }
+}
 
 @layer base {
   :root {
