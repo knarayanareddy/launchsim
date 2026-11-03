@@ -7,7 +7,8 @@ npm ci            # npm only — bun.lock was removed on purpose
 npm run dev       # http://localhost:8080
 ```
 
-Node 20+ and npm 10+ are required (`engines` in `package.json`).
+Node 22.12+ and npm 10+ are required (`engines` in `package.json`, `.nvmrc`
+pins 22). Vitest 5 and ESLint 10 dropped Node 20 support.
 
 ## Before you push
 

@@ -84,17 +84,17 @@ One-click export of any simulation report into a Notion page via the `notion-exp
 
 | Layer | Technology |
 |---|---|
-| **Framework** | React 18 + Vite 5 |
+| **Framework** | React 18 + Vite 8 |
 | **Language** | TypeScript 5 |
 | **Styling** | Tailwind CSS v3 + shadcn/ui |
 | **Animation** | Framer Motion |
 | **Charts** | Recharts |
-| **Routing** | React Router v6 |
+| **Routing** | React Router v7 |
 | **State / Data** | TanStack Query + React Context |
 | **Backend** | Lovable Cloud (Supabase: Postgres, Auth, Edge Functions, Storage) |
 | **AI** | Lovable AI Gateway (Google Gemini 2.5 Flash) |
 | **Email** | Resend (via `send-email` edge function) |
-| **Testing** | Vitest + Testing Library |
+| **Testing** | Vitest 5 + Testing Library |
 
 ---
 
@@ -198,7 +198,8 @@ LaunchSim is built on **Lovable Cloud**, so the backend (Postgres, Auth, Edge Fu
 
 ### Prerequisites
 
-- **Node.js 20+** (see `engines` in `package.json`)
+- **Node.js 22.12+** (see `engines` in `package.json`; `.nvmrc` pins 22) —
+  Vitest 5 and ESLint 10 require it
 - **npm 10+** — this repo uses **npm only**. `bun.lock` was removed because
   maintaining two lockfiles meant `npm ci` silently drifted out of sync and
   failed for anyone not using Bun.

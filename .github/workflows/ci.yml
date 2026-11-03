@@ -23,7 +23,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       # `npm ci` was failing on a stale lockfile; it is now the single source of
@@ -33,6 +33,12 @@ jobs:
 
       - name: Typecheck
         run: npm run typecheck
+
+      # Shipped dependencies only. A vulnerability in a devDependency cannot
+      # reach the bundle, and gating on the full tree makes the check so noisy
+      # it gets ignored. Run the full audit with: npm audit
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=moderate
 
       - name: Lint
         run: npm run lint

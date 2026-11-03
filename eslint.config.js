@@ -43,6 +43,15 @@ export default tseslint.config(
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrors: "none" },
       ],
 
+      // These come from eslint-plugin-react-hooks v7's React Compiler rules.
+      // They flag patterns that are legal in React 18 and only *required* once
+      // the compiler is enabled, so they are advisory here rather than
+      // blocking. Genuine impure-render and TDZ bugs they found have been
+      // fixed in the call sites; flip these back to "error" when adopting the
+      // React Compiler (or React 19).
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/immutability": "warn",
+
       "no-console": ["warn", { allow: ["warn", "error"] }],
       eqeqeq: ["error", "smart"],
       "no-debugger": "error",

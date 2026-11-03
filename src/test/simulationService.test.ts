@@ -237,3 +237,58 @@ describe("iteration grouping for edge-saved runs", () => {
     expect(fake.from).not.toHaveBeenCalled();
   });
 });
+
+describe("share tokens", () => {
+  it("generates unpredictable, fixed-length tokens", async () => {
+    const { generateShareToken } = await import("@/lib/simulationService");
+    const token = generateShareToken();
+    // 8 bytes rendered as hex.
+    expect(token).toMatch(/^[0-9a-f]{16}$/);
+  });
+
+  it("does not hand out duplicate tokens", async () => {
+    const { generateShareToken } = await import("@/lib/simulationService");
+    const tokens = new Set(Array.from({ length: 500 }, () => generateShareToken()));
+    expect(tokens.size).toBe(500);
+  });
+
+  it("publishSimulation reuses an existing token instead of minting a new one", async () => {
+    const { publishSimulation } = await import("@/lib/simulationService");
+    const before = fake._calls.length;
+    await expect(publishSimulation("sim-1", "already-shared")).resolves.toBe("already-shared");
+    expect(fake._calls.length).toBe(before);
+  });
+
+  it("publishSimulation writes a token and returns it", async () => {
+    fake = createFakeSupabase({
+      responses: {
+        "simulations.update": { data: null, error: null },
+        "simulations.select": { data: { share_token: "abc123def456abcd" }, error: null },
+      },
+    });
+    const { publishSimulation } = await import("@/lib/simulationService");
+    await expect(publishSimulation("sim-1", null)).resolves.toBe("abc123def456abcd");
+
+    const update = fake._calls.find((c) => c.table === "simulations" && c.op === "update");
+    const payload = update?.args[0] as { share_token: string };
+    expect(payload.share_token).toMatch(/^[0-9a-f]{16}$/);
+  });
+
+  it("publishSimulation surfaces a failure when no token is persisted", async () => {
+    fake = createFakeSupabase({
+      responses: {
+        "simulations.update": { data: null, error: null },
+        "simulations.select": { data: null, error: null },
+      },
+    });
+    const { publishSimulation } = await import("@/lib/simulationService");
+    await expect(publishSimulation("sim-1", null)).rejects.toThrow(/public/i);
+  });
+
+  it("unshareSimulation clears the token and timestamp", async () => {
+    const { unshareSimulation } = await import("@/lib/simulationService");
+    await unshareSimulation("sim-1");
+    const update = fake._calls.find((c) => c.table === "simulations" && c.op === "update");
+    expect(update?.args[0]).toEqual({ share_token: null, shared_at: null });
+  });
+});

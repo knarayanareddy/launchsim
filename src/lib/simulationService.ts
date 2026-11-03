@@ -170,6 +170,44 @@ export async function shareSimulation(simulationId: string): Promise<string> {
 }
 
 /**
+ * Generate a share token.
+ *
+ * Must be unpredictable: /wiki/:token is a capability URL, so guessable tokens
+ * leak other people's reports. `Math.random()` is not a CSPRNG — it is seeded
+ * predictably enough to enumerate values.
+ */
+export function generateShareToken(bytes = 8): string {
+  const buf = crypto.getRandomValues(new Uint8Array(bytes));
+  return Array.from(buf, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/** Revoke a public share link so /wiki/:token stops resolving. */
+export async function unshareSimulation(simulationId: string): Promise<void> {
+  const { error } = await supabase
+    .from("simulations")
+    .update({ share_token: null, shared_at: null })
+    .eq("id", simulationId);
+  if (error) throw error;
+}
+
+/** Publish a simulation, minting a token only if it does not already have one. */
+export async function publishSimulation(simulationId: string, token: string | null): Promise<string> {
+  if (token) return token;
+  const { error } = await supabase
+    .from("simulations")
+    .update({ share_token: generateShareToken(), shared_at: new Date().toISOString() })
+    .eq("id", simulationId);
+  if (error) throw error;
+  const { data } = await supabase
+    .from("simulations")
+    .select("share_token")
+    .eq("id", simulationId)
+    .maybeSingle();
+  if (!data?.share_token) throw new Error("Could not make this report public");
+  return data.share_token;
+}
+
+/**
  * Load a publicly shared report by token.
  *
  * Uses a token-scoped SECURITY DEFINER RPC rather than a table read: the old
