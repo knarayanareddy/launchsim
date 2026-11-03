@@ -18,6 +18,8 @@ const actionTypes = {
   DISMISS_TOAST: "DISMISS_TOAST",
   REMOVE_TOAST: "REMOVE_TOAST",
 } as const;
+// `actionTypes` is only consumed as a type below.
+void actionTypes;
 
 let count = 0;
 

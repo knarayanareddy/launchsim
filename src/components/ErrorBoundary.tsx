@@ -1,6 +1,7 @@
 import React, { Component, type ErrorInfo, type ReactNode } from "react";
 import { AlertTriangle, RefreshCw, Home, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { reportError } from "@/lib/errorReporting";
 
 interface Props {
   children: ReactNode;
@@ -25,6 +26,9 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("[ErrorBoundary]", error, info.componentStack);
+    // The UI promises "we've logged this issue" — make that true. Errors land in
+    // public.error_logs, which the admin System Health tab reads.
+    reportError(error, { page: window.location.pathname, componentStack: info.componentStack });
   }
 
   handleRefresh = () => window.location.reload();

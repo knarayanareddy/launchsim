@@ -1,4 +1,4 @@
-import { Home, FlaskConical, BookOpen, BarChart3, Settings, ChevronsUpDown, Users } from "lucide-react";
+import { Home, FlaskConical, BookOpen, BarChart3, Settings, Users } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";

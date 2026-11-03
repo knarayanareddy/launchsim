@@ -40,7 +40,7 @@ interface SimGroup {
 const Studio = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const launchRef = useRef<HTMLDivElement>(null);
   const [description, setDescription] = useState("");
   const [question, setQuestion] = useState("");
@@ -80,7 +80,7 @@ const Studio = () => {
   }, [iterationType, user]);
 
   const startCooldown = useCallback(() => {
-    setCooldown(10);
+    setCooldown(Math.round(RATE_LIMIT_MS / 1000));
     cooldownRef.current = setInterval(() => {
       setCooldown((prev) => {
         if (prev <= 1) {
@@ -92,8 +92,21 @@ const Studio = () => {
     }, 1000);
   }, []);
 
+  const creditsRemaining = profile?.credits_remaining ?? 0;
+  const outOfCredits = profile ? creditsRemaining <= 0 : false;
+
   const handleRun = useCallback(() => {
     if (cooldown > 0) return;
+
+    // Credits are enforced server-side by run-simulation; this is the friendly
+    // pre-check so users don't type a pitch only to be rejected afterwards.
+    if (outOfCredits) {
+      toast.error("You're out of simulation credits", {
+        description: "Upgrade your plan to keep running simulations.",
+        action: { label: "See plans", onClick: () => navigate("/pricing") },
+      });
+      return;
+    }
 
     const newErrors: typeof errors = {};
     const cleanDescription = sanitizeInput(description);
@@ -124,10 +137,10 @@ const Studio = () => {
         question: sanitizeInput(question),
         settings,
         groupId: iterationType === "iteration" ? selectedGroupId : null,
-        newGroupName: iterationType === "iteration" && !selectedGroupId ? newGroupName : null,
+        newGroupName: iterationType === "iteration" && !selectedGroupId ? newGroupName.trim() : null,
       },
     });
-  }, [description, question, settings, navigate, cooldown, startCooldown]);
+  }, [description, question, settings, navigate, cooldown, startCooldown, outOfCredits]);
 
   const charCount = description.length;
   const charGuidance =
@@ -274,7 +287,7 @@ const Studio = () => {
           <Button
             size="lg"
             onClick={handleRun}
-            disabled={cooldown > 0}
+            disabled={cooldown > 0 || outOfCredits}
             className="w-full rounded-xl py-6 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 glow-primary group relative overflow-hidden transition-all disabled:opacity-50"
           >
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
@@ -282,9 +295,26 @@ const Studio = () => {
               {cooldown > 0 ? `⏳ Wait ${cooldown}s` : "🐟 Run Simulation"}
             </span>
           </Button>
-          <p className="text-center text-muted-foreground text-xs font-mono mt-3">
-            Your results will be ready in under 60 seconds
-          </p>
+          {profile && (
+            <p
+              className={`text-center text-xs font-mono mt-3 ${
+                outOfCredits ? "text-destructive" : "text-muted-foreground"
+              }`}
+            >
+              {outOfCredits ? (
+                <>
+                  No credits remaining ·{" "}
+                  <button onClick={() => navigate("/pricing")} className="text-primary hover:underline">
+                    View plans
+                  </button>
+                </>
+              ) : (
+                <>
+                  {creditsRemaining} simulation{creditsRemaining === 1 ? "" : "s"} remaining · results in under 60 seconds
+                </>
+              )}
+            </p>
+          )}
         </motion.div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import SEO from "@/components/SEO";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,24 +13,24 @@ import StrengthsTab from "@/components/results/StrengthsTab";
 import AgentFeedTab from "@/components/results/AgentFeedTab";
 import RefinedPitchTab from "@/components/results/RefinedPitchTab";
 import NotionExportModal from "@/components/results/NotionExportModal";
-import { saveSimulation } from "@/lib/simulationService";
+import {
+  saveSimulation,
+  shareSimulation,
+  getSimulationById,
+  simulationRowToResult,
+} from "@/lib/simulationService";
 import { generatePdfReport } from "@/lib/pdfExport";
+import { planLevel } from "@/lib/config";
 import type { SimulationResult } from "@/hooks/useSimulation";
 
 const TABS = ["Overview", "Objections", "Strengths", "Agent Feed", "Refined Pitch"];
 
-// Placeholder: replace with real user plan logic
-const getUserPlan = (profile: any): "free" | "pro" | "unlimited" => {
-  const tier = profile?.plan_tier || "free";
-  if (tier === "enterprise") return "unlimited";
-  return tier as "free" | "pro" | "unlimited";
-};
-
 const Results = () => {
-  const { profile } = useAuth();
-  const USER_PLAN = getUserPlan(profile);
+  const { profile, refreshProfile } = useAuth();
+  const USER_PLAN = planLevel(profile?.plan_tier);
   const navigate = useNavigate();
   const location = useLocation();
+  const { id: routeId } = useParams<{ id?: string }>();
   const state = location.state as {
     description?: string;
     question?: string;
@@ -40,25 +40,55 @@ const Results = () => {
     savedShareToken?: string;
   } | null;
 
-  const aiResult = state?.aiResult;
-  const description = state?.description || "LaunchSim helps founders simulate how 1,000 real user types would react to their product before launch.";
+  // Deep links (/results/:id) load from the database instead of relying on
+  // router state. Previously refreshing the page — or opening a report link
+  // from the admin panel or a completion email — silently rendered mock data.
+  const [loaded, setLoaded] = useState<SimulationResult | null>(null);
+  const [description, setDescription] = useState(
+    state?.description || "LaunchSim helps founders simulate how 1,000 real user types would react to their product before launch.",
+  );
+  const [loadingReport, setLoadingReport] = useState(Boolean(routeId));
+  const [loadError, setLoadError] = useState<string | null>(null);
 
+  const [simulationId, setSimulationId] = useState<string | null>(state?.savedSimulationId ?? null);
   const [activeTab, setActiveTab] = useState(0);
-  const [shareToken, setShareToken] = useState<string | null>(null);
+  const [shareToken, setShareToken] = useState<string | null>(state?.savedShareToken ?? null);
+  const [sharing, setSharing] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [notionOpen, setNotionOpen] = useState(false);
   const savedRef = useRef(false);
 
-  // Auto-save on mount (skip if already saved by edge function)
-  useEffect(() => {
-    if (savedRef.current) return;
-    savedRef.current = true;
+  const aiResult = state?.aiResult ?? loaded;
 
-    // If the edge function already saved, use that
-    if (state?.savedSimulationId) {
-      setShareToken(state.savedShareToken || null);
-      return;
-    }
+  // Load a saved report when the route carries an id.
+  useEffect(() => {
+    if (!routeId) return;
+    let cancelled = false;
+
+    getSimulationById(routeId)
+      .then((row) => {
+        if (cancelled) return;
+        setLoaded(simulationRowToResult(row));
+        setDescription(row.product_description);
+        setSimulationId(row.id);
+        setShareToken(row.share_token);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Failed to load simulation:", err);
+        setLoadError("We couldn't load that report. It may have been deleted.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingReport(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [routeId]);
+
+  // Persist a freshly run simulation (skip if the edge function already saved).
+  useEffect(() => {
+    if (savedRef.current || routeId) return;
+    savedRef.current = true;
 
     const depthLabels = ["quick", "standard", "deep"];
 
@@ -70,22 +100,52 @@ const Results = () => {
       platform: state?.settings?.platform,
       depth: depthLabels[state?.settings?.depth ?? 1],
       aiResult: aiResult || undefined,
+      groupId: (state as { groupId?: string } | null)?.groupId ?? null,
+      newGroupName: (state as { newGroupName?: string } | null)?.newGroupName ?? null,
     })
       .then((result) => {
+        if (!result.persisted) return; // demo data is never saved
+        setSimulationId(result.id);
         setShareToken(result.share_token);
-        toast.success("Saved to your wiki");
+        // A run consumes a credit server-side; keep the header/Studio counters
+        // from going stale.
+        void refreshProfile();
+        toast.success("Saved to your dashboard");
       })
       .catch((err) => {
         console.error("Failed to save simulation:", err);
       });
-  }, []);
+  }, [routeId]);
 
+  // Sharing is an explicit action: reports are private until the user shares.
   const handleShare = async () => {
-    const url = shareToken
-      ? `${window.location.origin}/wiki/${shareToken}`
-      : window.location.href;
-    await navigator.clipboard.writeText(url);
-    toast.success("Link copied!", { description: "Anyone with this link can view your report" });
+    if (!simulationId) {
+      toast.info("Nothing to share yet", { description: "Run a simulation to generate a report." });
+      return;
+    }
+
+    let token = shareToken;
+    if (!token) {
+      setSharing(true);
+      try {
+        token = await shareSimulation(simulationId);
+        setShareToken(token);
+      } catch (err) {
+        console.error("Failed to create share link:", err);
+        toast.error("Could not create a share link. Please try again.");
+        return;
+      } finally {
+        setSharing(false);
+      }
+    }
+
+    const url = `${window.location.origin}/wiki/${token}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Link copied!", { description: "Anyone with this link can view your report" });
+    } catch {
+      toast.info("Copy this link", { description: url, duration: 10000 });
+    }
   };
 
   const handleExportPdf = async () => {
@@ -112,15 +172,60 @@ const Results = () => {
       toast.info("Notion export requires Unlimited plan", { description: "Upgrade to export directly to Notion." });
       return;
     }
+    if (!simulationId || !aiResult) {
+      toast.info("Run a simulation first", { description: "Only saved reports can be exported to Notion." });
+      return;
+    }
     setNotionOpen(true);
   };
+
+  // --- Loading / error / empty states -------------------------------------
+  if (loadingReport) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground font-mono">Loading report…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6">
+        <div className="text-center max-w-sm">
+          <h1 className="text-xl font-bold mb-2">Report unavailable</h1>
+          <p className="text-sm text-muted-foreground mb-6">{loadError}</p>
+          <Button onClick={() => navigate("/dashboard")}>Back to dashboard</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // No router state and no id: never render demo data as if it were a report.
+  if (!aiResult) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6">
+        <div className="text-center max-w-sm">
+          <h1 className="text-xl font-bold mb-2">No report to show</h1>
+          <p className="text-sm text-muted-foreground mb-6">
+            Run a simulation to generate a launch readiness report.
+          </p>
+          <Button onClick={() => navigate("/studio")} className="bg-primary text-primary-foreground">
+            Start a simulation
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pb-20">
       <SEO
         title={`Launch Readiness Report — Score: ${aiResult?.overall_score ?? "?"}/100`}
         description={`This LaunchSim report shows ${aiResult?.overall_score ?? "?"}/100 launch readiness. See the full analysis with objections, strengths, and refined pitch.`}
-        path="/results"
+        path={simulationId ? `/results/${simulationId}` : "/results"}
         noIndex
       />
       {/* Mode indicator */}
@@ -183,7 +288,13 @@ const Results = () => {
                 )}
                 Notion
               </Button>
-              <Button size="sm" onClick={handleShare} className="text-xs bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button
+                size="sm"
+                onClick={handleShare}
+                disabled={sharing}
+                className="text-xs bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                {sharing ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
                 Share
               </Button>
               <Button
@@ -257,6 +368,7 @@ const Results = () => {
           onOpenChange={setNotionOpen}
           result={aiResult}
           description={description}
+          simulationId={simulationId}
         />
       )}
 

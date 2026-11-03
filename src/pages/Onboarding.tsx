@@ -5,7 +5,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, ArrowRight, Rocket } from "lucide-react";
-import { toast } from "sonner";
 
 const EXAMPLE_IDEAS = [
   { label: "AI writing tool", text: "An AI-powered writing assistant that helps content creators draft blog posts, social media captions, and email newsletters in their brand voice. It learns from past content to maintain consistency and suggests SEO improvements." },
@@ -26,7 +25,7 @@ const Onboarding = () => {
   const [step, setStep] = useState(1);
   const [userType, setUserType] = useState("");
   const [idea, setIdea] = useState("");
-  const [direction, setDirection] = useState<"forward" | "back">("forward");
+  const [, setDirection] = useState<"forward" | "back">("forward");
 
   // Redirect if already completed
   useEffect(() => {

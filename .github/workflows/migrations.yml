@@ -1,0 +1,48 @@
+name: Migrations
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
+      - ".github/workflows/migrations.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
+      - ".github/workflows/migrations.yml"
+  # Allow a manual run when you want to validate a migration before merging.
+  workflow_dispatch:
+
+concurrency:
+  group: migrations-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Apply migrations to PostgreSQL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # pgserver ships a real PostgreSQL binary as a wheel, so migrations can be
+      # applied against an actual engine without Docker or the Supabase CLI.
+      - name: Install PostgreSQL harness
+        run: pip install pgserver
+
+      - name: Apply migrations and check schema invariants
+        working-directory: supabase/tests
+        run: python verify_migrations.py
+
+      - name: Run RLS / grant security assertions
+        working-directory: supabase/tests
+        run: python security_test.py

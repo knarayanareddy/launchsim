@@ -86,31 +86,57 @@ function buildMockResult(): SimulationResult {
   };
 }
 
+/** How long we wait for the swarm before giving up and showing an error. */
+const SIMULATION_TIMEOUT_MS = 90_000;
+
 export function useSimulation(params: UseSimulationParams | null) {
   const [result, setResult] = useState<SimulationResult | null>(null);
-  const [loading, setLoading] = useState(true);
+  // `loading` used to start as `true` even when there were no params to run,
+  // so visiting /simulation directly spun forever.
+  const [loading, setLoading] = useState(Boolean(params));
   const [error, setError] = useState<string | null>(null);
   const calledRef = useRef(false);
+  // Hoisted so `finally` can always clear it.
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   useEffect(() => {
     if (!params || calledRef.current) return;
     calledRef.current = true;
 
     const run = async () => {
+      let timedOut = false;
+
+      // supabase-js doesn't expose an abort signal on invoke(), so enforce the
+      // deadline by racing the request against a timer. Without this a slow
+      // model left the theatre stuck on "Finalizing analysis…" forever.
+      const invoke = supabase.functions.invoke("run-simulation", {
+        body: {
+          productDescription: params.description,
+          simulationQuestion: params.question || "",
+          crowdSize: params.crowdSize || 200,
+          audienceMix: params.audienceMix || ["founders", "pms"],
+          platform: params.platform || "both",
+          depth: params.depth || "standard",
+        },
+      });
+
+      const deadline = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          timedOut = true;
+          reject(new Error("Simulation timed out"));
+        }, SIMULATION_TIMEOUT_MS);
+      });
+
       try {
-        const { data, error: fnError } = await supabase.functions.invoke("run-simulation", {
-          body: {
-            productDescription: params.description,
-            simulationQuestion: params.question || "",
-            crowdSize: params.crowdSize || 200,
-            audienceMix: params.audienceMix || ["founders", "pms"],
-            platform: params.platform || "both",
-            depth: params.depth || "standard",
-          },
-        });
+        const { data, error: fnError } = await Promise.race([invoke, deadline]);
 
         if (fnError) throw new Error(fnError.message);
-        if (data?.error || data?.fallback) throw new Error(data?.error || "Simulation failed");
+
+        // A hard error (out of credits, suspended account, unauthorised) is not
+        // something demo data can paper over — surface it and stop.
+        if (data?.error) {
+          throw Object.assign(new Error(data.error), { code: data.code });
+        }
 
         // Normalize the AI response
         const normalized: SimulationResult = {
@@ -141,11 +167,29 @@ export function useSimulation(params: UseSimulationParams | null) {
 
         setResult(normalized);
       } catch (err) {
-        console.error("Simulation API error, falling back to mock:", err);
-        handleApiError(err, { fallbackMessage: "Simulation failed — showing demo results instead." });
-        setError(err instanceof Error ? err.message : "Unknown error");
+        const code = (err as { code?: string })?.code;
+        const message = err instanceof Error ? err.message : "Unknown error";
+        const aborted = timedOut;
+
+        console.error("Simulation API error:", message);
+        handleApiError(err, {
+          fallbackMessage: aborted
+            ? "The simulation timed out. Your credit was refunded — please try again."
+            : "Simulation failed — showing demo results instead.",
+        });
+
+        // Out of credits / suspended / unauthenticated: no demo fallback, the
+        // user needs to act.
+        if (code === "insufficient_credits" || /suspended|unauthorized|not signed in/i.test(message)) {
+          setError(message);
+          setResult(null);
+          return;
+        }
+
+        setError(message);
         setResult(buildMockResult());
       } finally {
+        if (timeoutId) clearTimeout(timeoutId);
         setLoading(false);
       }
     };

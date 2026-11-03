@@ -4,7 +4,6 @@ import type { SimulationResult } from "@/hooks/useSimulation";
 const BLUE = [79, 142, 247]; // LaunchSim blue
 const DARK = [30, 30, 40];
 const GRAY = [100, 116, 139];
-const WHITE = [255, 255, 255];
 
 function setColor(doc: jsPDF, rgb: number[]) {
   doc.setTextColor(rgb[0], rgb[1], rgb[2]);

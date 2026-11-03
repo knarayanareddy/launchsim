@@ -1,7 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* Fonts must be imported before any other at-rule: CSS requires @import to
+   precede all statements except @charset. Previously these sat below
+   `@tailwind base`, which Vite warned about and which produced a build with
+   ZERO @font-face rules — every user silently got system fonts. */
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
@@ -11,6 +11,10 @@
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/700.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {

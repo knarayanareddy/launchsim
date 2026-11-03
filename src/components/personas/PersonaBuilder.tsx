@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
 import { X, Save, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -154,7 +153,6 @@ const RadarChart = ({ values }: { values: number[] }) => {
 };
 
 const getSampleReaction = (form: PersonaForm): string => {
-  const name = form.name || "This persona";
   if (form.personality_type === "skeptic" || form.skepticism >= 7) {
     return `"I've seen at least five tools pitch this exact thing in the last year. What's the actual moat here? And don't say 'AI-powered' — everyone says that. Show me retention numbers or a case study, not a landing page."`;
   }

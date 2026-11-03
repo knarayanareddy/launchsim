@@ -1,11 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Trash2, Eye, RefreshCw, Download, Plus, ArrowRight, TrendingUp, X, Gift } from "lucide-react";
+import { Trash2, Eye, RefreshCw, Plus, ArrowRight, TrendingUp, X, Gift } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import SEO from "@/components/SEO";

@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
+Allow: /wiki/
+Allow: /pricing
+
+# Authenticated product surfaces — nothing here is useful to a crawler.
 Disallow: /dashboard
 Disallow: /studio
 Disallow: /simulation
@@ -8,5 +12,9 @@ Disallow: /settings
 Disallow: /onboarding
 Disallow: /tracker
 Disallow: /compare
+Disallow: /personas
+Disallow: /admin
+Disallow: /reset-password
+Disallow: /forgot-password
 
 Sitemap: https://launchsim.lovable.app/sitemap.xml
