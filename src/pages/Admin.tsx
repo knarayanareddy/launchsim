@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import SEO from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { publishSimulation, unshareSimulation } from "@/lib/simulationService";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -457,10 +458,19 @@ function SimulationsTab() {
   useEffect(() => { fetchSims(); }, [fetchSims]);
 
   const togglePublic = async (sim: AdminSim) => {
-    const newToken = sim.share_token ? null : Math.random().toString(36).slice(2, 10);
-    await supabase.from("simulations").update({ share_token: newToken } as any).eq("id", sim.id);
-    toast.success(newToken ? "Made public" : "Made private");
-    fetchSims();
+    try {
+      if (sim.share_token) {
+        await unshareSimulation(sim.id);
+        toast.success("Made private");
+      } else {
+        await publishSimulation(sim.id, null);
+        toast.success("Made public");
+      }
+      await fetchSims();
+    } catch (err) {
+      console.error("Failed to update share state:", err);
+      toast.error("Could not update the share link");
+    }
   };
 
   const handleDelete = async () => {

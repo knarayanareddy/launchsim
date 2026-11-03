@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import AgentGrid from "@/components/simulation/AgentGrid";
@@ -40,7 +40,9 @@ const Simulation = () => {
   const [currentRound, setCurrentRound] = useState(1);
   const [demoBannerDismissed, setDemoBannerDismissed] = useState(false);
   const totalRounds = 5;
-  const startTimeRef = useRef(Date.now());
+  // Captured once via a lazy initialiser. Reading Date.now() during render is
+  // impure: it differs on every pass and makes the component untestable.
+  const [startTime] = useState(() => Date.now());
 
   const complete = animationComplete && !aiLoading;
   const finalizing = animationComplete && aiLoading;
@@ -83,7 +85,7 @@ const Simulation = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const elapsed = Date.now() - startTimeRef.current;
+      const elapsed = Date.now() - startTime;
       const pct = Math.min((elapsed / SIMULATION_DURATION) * 100, 100);
       setProgress(pct);
       if (pct >= 100) { clearInterval(interval); setAnimationComplete(true); }

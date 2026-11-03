@@ -109,7 +109,16 @@ def main() -> int:
         )
 
         token = db.scalar(f"SELECT public.share_simulation('{SIM}');", **ALICE_S)
-        check("owner can mint a share token", len(token) >= 8, token)
+        # 16 hex chars from gen_random_uuid() = 64 bits of CSPRNG entropy.
+        check("owner can mint a share token", len(token) == 16, token)
+        check(
+            "share token is hex from a CSPRNG",
+            all(c in "0123456789abcdef" for c in token),
+            token,
+        )
+        # Re-sharing must be idempotent rather than rotating a live link.
+        again = db.scalar(f"SELECT public.share_simulation('{SIM}');", **ALICE_S)
+        check("share_simulation reuses an existing token", again == token, f"{again} != {token}")
 
         bob_token = db.scalar(f"SELECT public.share_simulation('{SIM}');", **BOB_S)
         # COPY renders SQL NULL as \N, and the UPDATE policy means a non-owner
@@ -121,6 +130,13 @@ def main() -> int:
 
         anon_shared = db.scalar(f"SELECT count(*) FROM public.get_shared_simulation('{token}');", **ANON_S)
         check("a shared report is readable by anon through the token RPC", anon_shared == "1", f"rows: {anon_shared}")
+
+        # Tokens must not collide across simulations.
+        gen = db.scalar(
+            f"SELECT count(DISTINCT left(replace(gen_random_uuid()::text,'-',''),16)) "
+            f"FROM generate_series(1, 500);"
+        )
+        check("gen_random_uuid() yields 500 distinct 16-char tokens", gen == "500", gen)
 
         check(
             "anonymous users cannot read the simulations table directly",

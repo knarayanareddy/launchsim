@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -37,12 +37,11 @@ const Tracker = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
 
-  useEffect(() => {
+  // Defined before the effect that calls it: `fetchGroups` is a const, so
+  // referencing it from an effect declared above it risks a temporal-dead-zone
+  // access on first render.
+  const fetchGroups = useCallback(async () => {
     if (!user) return;
-    fetchGroups();
-  }, [user]);
-
-  const fetchGroups = async () => {
     const { data, error } = await supabase
       .from("simulation_groups")
       .select("*")
@@ -56,7 +55,11 @@ const Tracker = () => {
       setGroups((data as any[]) || []);
     }
     setLoading(false);
-  };
+  }, [user]);
+
+  useEffect(() => {
+    fetchGroups();
+  }, [fetchGroups]);
 
   const toggleExpand = async (group: SimGroup) => {
     if (expandedId === group.id) {

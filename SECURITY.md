@@ -40,8 +40,14 @@ no `UPDATE` grant on that column.
 
 A simulation is private until `share_simulation()` mints a token. Public reads go
 through `get_shared_simulation(token)`, which returns exactly one row. A share
-token is 8 hex characters — treat it as a bearer capability: anyone with the
-link can read that one report.
+token is 16 hex characters (64 bits from `gen_random_uuid()`) — treat it as a
+bearer capability: anyone with the link can read that one report.
+
+The token must be unguessable, because the URL *is* the authorisation. An
+earlier implementation used `md5(random()::text || clock_timestamp())` truncated
+to 8 chars; `random()` is not a CSPRNG and the search space was small enough to
+enumerate. Client-side token minting now uses `crypto.getRandomValues()` in
+`generateShareToken()` rather than `Math.random()`.
 
 ### Verifying policies
 
@@ -51,6 +57,19 @@ merging a migration. One trap worth remembering: `REVOKE ALL ... FROM PUBLIC`
 leaves Supabase's default grants to `anon`/`authenticated` intact, so privileged
 functions must also be revoked from those roles explicitly.
 
+### Dependency hygiene
+
+`npm audit --omit=dev --audit-level=moderate` runs in CI. Only **production**
+dependencies are gated: a devDependency vulnerability cannot reach the shipped
+bundle, and gating the full tree produces enough noise to be ignored. Advisories
+that are build-time or Node-only (e.g. `postcss`, `ws` inside
+`@supabase/realtime-js`) are still patched, just not build-breaking.
+
+When an advisory has no fix inside the current major, `overrides` in
+`package.json` pins the patched transitive version. Overrides must stay within a
+package's existing major: forcing `brace-expansion@1` onto a `minimatch` v10 that
+expects v4+ breaks ESLint at config load.
+
 ### Known gaps
 
 - **No payment provider.** Upgrades are manual; `/pricing` does not take cards.
@@ -59,3 +78,10 @@ functions must also be revoked from those roles explicitly.
   requests back to back. Put a gateway limit in front before scaling.
 - **CSP is not configured.** Consider adding a `Content-Security-Policy` header
   at the hosting layer.
+- **No formal red-team/pen-test has been performed.** Coverage is the 37
+  executable RLS/grant assertions in `supabase/tests/security_test.py` plus the
+  CI dependency audit. Auth/session logic, rate limiting and the payment flow
+  have not been reviewed by an adversarial third party.
+- **Toolchain majors pending.** React 18→19, Tailwind 3→4, TypeScript 5→7,
+  Recharts 2→3 and sonner 1→2 are still behind. These need their own migration
+  PR with a visual regression pass; they are not security-driven.

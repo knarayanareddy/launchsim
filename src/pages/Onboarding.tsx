@@ -338,41 +338,44 @@ function StepReady({
 }
 
 // ── CONFETTI ──
-function Confetti() {
-  const colors = [
-    "hsl(217, 91%, 64%)",
-    "hsl(166, 100%, 42%)",
-    "hsl(36, 90%, 55%)",
-    "hsl(145, 64%, 51%)",
-    "hsl(353, 100%, 64%)",
-    "hsl(270, 80%, 60%)",
-  ];
+const CONFETTI_COLORS = [
+  "hsl(217, 91%, 64%)",
+  "hsl(166, 100%, 42%)",
+  "hsl(36, 90%, 55%)",
+  "hsl(145, 64%, 51%)",
+  "hsl(353, 100%, 64%)",
+  "hsl(270, 80%, 60%)",
+];
 
+// Particle placement is randomised once per mount. Calling Math.random() during
+// render is impure: every re-render produced different positions, which could
+// make React see a new tree and re-run the confetti animation mid-flight.
+const CONFETTI_PIECES = Array.from({ length: 14 }, (_, i) => ({
+  left: Math.random() * 100,
+  delay: Math.random() * 0.6,
+  size: 6 + Math.random() * 6,
+  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+  duration: 1.5 + Math.random(),
+}));
+
+function Confetti() {
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-      {Array.from({ length: 14 }).map((_, i) => {
-        const left = Math.random() * 100;
-        const delay = Math.random() * 0.6;
-        const size = 6 + Math.random() * 6;
-        const color = colors[i % colors.length];
-        const duration = 1.5 + Math.random() * 1;
-
-        return (
-          <div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              left: `${left}%`,
-              top: "-5%",
-              width: size,
-              height: size,
-              background: color,
-              animation: `confetti-fall ${duration}s ease-out ${delay}s forwards`,
-              opacity: 0,
-            }}
-          />
-        );
-      })}
+      {CONFETTI_PIECES.map((piece, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            left: `${piece.left}%`,
+            top: "-5%",
+            width: piece.size,
+            height: piece.size,
+            background: piece.color,
+            animation: `confetti-fall ${piece.duration}s ease-out ${piece.delay}s forwards`,
+            opacity: 0,
+          }}
+        />
+      ))}
     </div>
   );
 }
