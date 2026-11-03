@@ -406,7 +406,7 @@ function IterationFooterCTA({ description }: { description: string }) {
           <select
             value={selectedGroup}
             onChange={(e) => setSelectedGroup(e.target.value)}
-            className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            className="h-8 px-3 rounded-lg bg-white/5 border border-white/10 text-xs text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
           >
             <option value="">Add as iteration of...</option>
             {groups.map((g) => (

@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
 import { componentTagger } from "lovable-tagger";
 
@@ -28,7 +29,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     allowedHosts: [".e2b.app", ".lovable.app", "localhost"],
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react(), tailwindcss(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),

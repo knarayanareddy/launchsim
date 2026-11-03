@@ -59,7 +59,7 @@ export default tseslint.config(
   },
   {
     // Config files legitimately use require().
-    files: ["*.config.{js,ts}", "tailwind.config.ts", "postcss.config.js"],
+    files: ["*.config.{js,ts}"],
     rules: {
       "@typescript-eslint/no-require-imports": "off",
       "no-undef": "off",
